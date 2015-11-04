@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="11st browser API">
+    <meta name="author" content="http://www.skplanet.com">
+    <title>Alfred</title>
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <style>
+    body {
+      font-family: "Gill Sans", Helvetica, Arial, sans-serif;
+      line-height:1.5em;
+      color: #232323;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 {
+      font-family: Gill Sans, serif;
+      line-height:1.5em;
+      border-bottom: 1px solid #ccc;
+    }
+    </style>
+  </head>
+
+  <body>
+    <!-- Begin page content -->
+    <div class="container">
+      <!--
+      <div class="page-header">
+        <h3><a href="/">Alfred-v0.0.1</a></h3>
+      </div>
+      -->
+
+      <!-- image upload, start classiy_url -->
+      <form role="form" action="browser_request_handler" method="get">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" name="url" id="url" placeholder="Provide an image URL">
+            <select type="select" class="form-control" name="category" id="category" placeholder="Select Category">
+              <option value="">Select Category</option>
+              <option value="127687">skirts(127687)</option>
+              <option value="127681">Tshirts(127681)</option>
+              <option value="1530">woman's jacket/coat(1530)</option>
+              <option value="1645">man's casual pants(1645)</option>
+              <option value="1612">long-T/man-to-man(1612)</option>
+            <span class="input-group-btn">
+              <input class="btn btn-primary" value="Send" type="submit" id="browser_request_handler"></input>
+            </span>
+          </div><!-- /input-group -->
+        </div>
+      </form>
+
+      {% if has_result %}
+      <!-- <h3>Similar style</h3> -->
+      <center><img img class="image_show" src="{{result[0]}}" height="192" width="192"></center>
+        <table class="d_table">
+          <tr>
+            {% for item in result[1:] %}
+              <td> <img img class="image_show" src="{{item}}" height="192" width="192"> </td>
+              {% if loop.index is divisibleby 4 %} </tr><tr> {% endif %}
+            {% endfor %}
+          </tr>
+        </table>
+        <p>{{ flag }} sec.</p>
+      {% else %}
+        <h3>ERROR</h3>
+      {% endif %}
+
+    <hr>
+    <div id="footer">
+      <div class="container">
+        <p>&copy; Machine Intelligence Lab., SK Planet</p>
+      </div>
+    </div>
+  </body>
+</html>
