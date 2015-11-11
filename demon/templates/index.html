@@ -35,6 +35,7 @@
       -->
 
       <!-- image upload, start classiy_url -->
+      <center>
       <form role="form" action="browser_request_handler" method="get">
         <div class="form-group">
           <div class="input-group">
@@ -52,22 +53,29 @@
           </div><!-- /input-group -->
         </div>
       </form>
+      </center>
 
       {% if has_result %}
       <!-- <h3>Similar style</h3> -->
-      <center><img img class="image_show" src="{{result[0]}}" height="192" width="192"></center>
+      <center>
+        <img img class="image_show" src="{{result[0]['meta']}}" height="192" width="192">
         <table class="d_table">
           <tr>
             {% for item in result[1:] %}
-              <td> <img img class="image_show" src="{{item}}" height="192" width="192"> </td>
+              <td> 
+                <img img class="image_show" src="{{item['meta']}}" height="192" width="192">
+                </br>
+                <center><font size=1>hamming-dist: {{item['distance']}}</font></center>
+              </td>
               {% if loop.index is divisibleby 4 %} </tr><tr> {% endif %}
             {% endfor %}
           </tr>
         </table>
         <p>{{ flag }} sec.</p>
       {% else %}
-        <h3>ERROR</h3>
+        <h3>Welcome</h3>
       {% endif %}
+    </center>
 
     <hr>
     <div id="footer">

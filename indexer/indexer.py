@@ -83,9 +83,11 @@ class indexer:
     diff = self.lookup[diff]
     dist = np.sum(diff, axis=1)
     neighbor_list = np.argsort(dist)
-    result = []
+    result_neighbor_meta = []
+    result_neighbor_distance = []
     for neighbor_id in neighbor_list[0:num_neighbors]:
-      result.append(self.database[index_key]['meta'][neighbor_id]) 
+      result_neighbor_meta.append(self.database[index_key]['meta'][neighbor_id]) 
+      result_neighbor_distance.append(dist[neighbor_id])
 
-    return result
+    return result_neighbor_meta, result_neighbor_distance
     

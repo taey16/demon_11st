@@ -20,6 +20,7 @@ class agent(object):
     'image_dim': 384, 'raw_scale': 255.,
   }
 
+
   def __init__(self, model_def_file, pretrained_model_file,
          raw_scale, image_dim, gpu_mode, device_id):
     if gpu_mode: 
