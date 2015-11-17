@@ -47,6 +47,7 @@ category_no.append('1612')
 max_num_items.append(42900)
 current_category = 4 
 
+
 INPUT_FILENAME = '{}/demo_{}.txt'.format(
   '11st_julia', category_no[current_category])
 OUTPUT_FILENAME = \
