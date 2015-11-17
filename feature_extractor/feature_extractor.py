@@ -7,7 +7,7 @@ import scipy.io as sio
 import cPickle as pickle
 import sys, os
 import datetime
-PJT_ROOT = '/home/taey16/'
+PJT_ROOT = '/work/'
 PJT_NAME = '{}/demon_11st/'.format(PJT_ROOT)
 INDEXER_ROOT = '{}/indexer'.format(PJT_NAME)
 UTILS_ROOT = '{}/utils'.format(PJT_NAME)
@@ -22,11 +22,11 @@ from indexer import indexer
 net_args = {
   'model_def_file': '{}/storage/models/inception5/inception5.prototxt'.format(PJT_ROOT),
   'pretrained_model_file': '{}/storage/models/inception5/inception5.caffemodel'.format(PJT_ROOT),
-  'gpu_mode': True, 'device_id': 1,
+  'gpu_mode': True, 'device_id': 0,
   'image_dim': 384, 'raw_scale': 255.,
 }
 
-DATASET_ROOT = '/userdata2/index_11st_20151020/'
+DATASET_ROOT = '/storage/product'
 #demo_127681.txt woman,tshirts
 #demo_127687.txt woman,skirts
 #demo_1530.txt jacats, coats
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
   agent = agent(**net_args)
   agent.net.forward()
-  #import pdb; pdb.set_trace()
+  import pdb; pdb.set_trace()
   indexer = indexer(category_no, max_num_items)
 
   item_counter = 0
