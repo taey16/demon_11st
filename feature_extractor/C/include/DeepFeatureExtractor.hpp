@@ -48,7 +48,7 @@ public:
     std::vector<std::vector<uint64_t> >& reference,
     std::vector<unsigned int>& distance);
 
-  unsigned int GetSignatureSize() const { return binary_feature_size; }
+  unsigned int GetSignatureSize() const { return m_binary_feature_size; }
 
 private:
   int ROI(const cv::Mat& image, const cv::Rect& roi);
