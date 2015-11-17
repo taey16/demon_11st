@@ -46,8 +46,9 @@ int main(int argc, char** argv)
   }
   std::cout << std::endl;
 
-  std::vector<std::vector<uint64_t> > ref(1000000);
-  for(unsigned int n=0; n<1000000; n++) {
+  const unsigned int num_ref = 10000000;
+  std::vector<std::vector<uint64_t> > ref(num_ref);
+  for(unsigned int n=0; n<num_ref; n++) {
     ref[n] = std::vector<uint64_t>(agent.GetSignatureSize(), 0);
   }
   unsigned int distance = agent.HammingDistance(signature, signature);
@@ -60,9 +61,9 @@ int main(int argc, char** argv)
   Utils::Argsort(distance_vector, index_vector);
   unsigned int toc_sort = Utils::getTickCount();
 
-  std::cout<< "fe: " << toc_fe - tic_fe << " "
-           << "he: " << toc_he - tic_he << " "
-           << "sort: " << toc_sort - tic_sort << std::endl;
+  std::cout<< "feature extractor: " << toc_fe - tic_fe << " msec. "
+           << "hamming-dist: " << toc_he - tic_he << " msec."
+           << "sort: " << toc_sort - tic_sort << " msec." << std::endl;
 
   return 0;
 }
