@@ -1,6 +1,6 @@
 CXX=	g++
 
-DEBUG= -g -O2 
+DEBUG= -g -O2
 
 # dynamic link for cuda
 CUDA_ROOT= /usr/local/cuda
