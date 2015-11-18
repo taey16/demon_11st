@@ -92,6 +92,7 @@ def browser_request_handler():
 
     feature = app.agent.extract_feature(image, 'pool5/7x7_s1')
     logging.info('extract_feature done')
+    #feature_probe = feature
     feature = app.indexer.hashing(feature)
     feature = app.indexer.pack_bit_16(feature)
     logging.info('hashing done')
@@ -122,6 +123,7 @@ def browser_request_handler():
 
   return flask.render_template(
     'index.html', has_result=True, result=result, flag='success')
+    #'index.html', has_result=True, result=result, flag=feature_probe[0,:])
 
 
 @app.route('/')
@@ -170,12 +172,12 @@ if __name__ == '__main__':
   # set indexer args
   category_no = []
   max_num_items = []
-  category_no.append('127681')
-  max_num_items.append(140000)
-  category_no.append('127687')
-  max_num_items.append(41000)
-  category_no.append('1530')
-  max_num_items.append(43000)
+  #category_no.append('127681')
+  #max_num_items.append(140000)
+  #category_no.append('127687')
+  #max_num_items.append(41000)
+  #category_no.append('1530')
+  #max_num_items.append(43000)
   category_no.append('1645')
   max_num_items.append(26300)
   category_no.append('1612')
