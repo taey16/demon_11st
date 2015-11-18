@@ -49,24 +49,31 @@ int main(int argc, char** argv)
   }
   std::cout << std::endl;
 
-  const unsigned int num_ref = 10000000;
-  std::vector<std::vector<uint64_t> > ref(num_ref);
-  for(unsigned int n=0; n<num_ref; n++) {
-    ref[n] = std::vector<uint64_t>(matcher.GetSignatureSize(), 0);
-  }
-  unsigned int distance = matcher.HammingDistance(signature, signature);
-  std::vector<unsigned int> distance_vector; 
-  std::vector<unsigned int> index_vector; 
-  unsigned int tic_he = Utils::getTickCount();
-  matcher.HammingDistance(signature, ref, distance_vector);
-  unsigned int toc_he = Utils::getTickCount();
-  unsigned int tic_sort = Utils::getTickCount();
-  Utils::Argsort(distance_vector, index_vector);
-  unsigned int toc_sort = Utils::getTickCount();
+  std::vector<unsigned int> num_ref(4, 0);
+  num_ref[0] = 10000;
+  num_ref[1] = 100000;
+  num_ref[2] = 1000000;
+  num_ref[3] = 10000000;
+  for(unsigned int trial=0; trial<4; trial++) {
+    std::vector<std::vector<uint64_t> > ref(num_ref[trial]);
+    for(unsigned int n=0; n<num_ref[trial]; n++) {
+      ref[n] = std::vector<uint64_t>(matcher.GetSignatureSize(), 0);
+    }
+    unsigned int distance = matcher.HammingDistance(signature, signature);
+    std::vector<unsigned int> distance_vector; 
+    std::vector<unsigned int> index_vector; 
+    unsigned int tic_he = Utils::getTickCount();
+    matcher.HammingDistance(signature, ref, distance_vector);
+    unsigned int toc_he = Utils::getTickCount();
+    unsigned int tic_sort = Utils::getTickCount();
+    Utils::Argsort(distance_vector, index_vector);
+    unsigned int toc_sort = Utils::getTickCount();
 
-  std::cout<< "feature extractor: " << toc_fe - tic_fe << " msec. "
-           << "hamming-dist: " << toc_he - tic_he << " msec."
-           << "sort: " << toc_sort - tic_sort << " msec." << std::endl;
+    std::cout<< "feature extractor: " << toc_fe - tic_fe << " msec. "
+             << "hamming-dist for " << num_ref[trial] 
+             << " samples: " << toc_he - tic_he << " msec. "
+             << "sort: " << toc_sort - tic_sort << " msec." << std::endl;
+  }
 
   return 0;
 }
