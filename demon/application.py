@@ -172,12 +172,12 @@ if __name__ == '__main__':
   # set indexer args
   category_no = []
   max_num_items = []
-  #category_no.append('127681')
-  #max_num_items.append(140000)
-  #category_no.append('127687')
-  #max_num_items.append(41000)
-  #category_no.append('1530')
-  #max_num_items.append(43000)
+  category_no.append('127681')
+  max_num_items.append(140000)
+  category_no.append('127687')
+  max_num_items.append(41000)
+  category_no.append('1530')
+  max_num_items.append(43000)
   category_no.append('1645')
   max_num_items.append(26300)
   category_no.append('1612')
