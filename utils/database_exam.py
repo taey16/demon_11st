@@ -1,4 +1,6 @@
 
+# -*- coding: UTF-8 -*-
+
 from database_11st import database_11st
 import MySQLdb
 
