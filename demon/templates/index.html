@@ -71,13 +71,12 @@
             {% endfor %}
           </tr>
         </table>
-        <p>{{ flag }} sec.</p>
-        <!-- 
+        <!-- <p>{{ flag }} sec.</p> -->
+        <center>Display feature values for the query</center>
         {% for value in flag %}
           {{value}}
           {% if loop.index is divisibleby 10 %} </br> {% endif %}
         {% endfor %}
-        -->
       {% else %}
         <h3>Welcome</h3>
       {% endif %}

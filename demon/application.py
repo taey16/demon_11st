@@ -92,7 +92,7 @@ def browser_request_handler():
 
     feature = app.agent.extract_feature(image, 'pool5/7x7_s1')
     logging.info('extract_feature done')
-    #feature_probe = feature
+    feature_probe = feature
     feature = app.indexer.hashing(feature)
     feature = app.indexer.pack_bit_16(feature)
     logging.info('hashing done')
@@ -122,8 +122,8 @@ def browser_request_handler():
       'index.html', has_result=False, result=result, flag='fail')
 
   return flask.render_template(
-    'index.html', has_result=True, result=result, flag='success')
-    #'index.html', has_result=True, result=result, flag=feature_probe[0,:])
+    #'index.html', has_result=True, result=result, flag='success')
+    'index.html', has_result=True, result=result, flag=feature_probe[0,:])
 
 
 @app.route('/')
@@ -131,7 +131,6 @@ def index():
   #import pdb; pdb.set_trace()
   return flask.render_template(
     'index.html', has_result=False, result=[], flag='fail')
-
 
 
 class application(web_server):
