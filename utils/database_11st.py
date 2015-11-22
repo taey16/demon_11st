@@ -16,17 +16,25 @@ class database_11st(parser_11st):
 
   def connect(self, host, port, user, p, 
               table_name, db='PBrain'):
-    self.db = MySQLdb.connect(host, user, p, db, port)
-    self.cur= db.cursor()
-    self.table_name = table_name
+    try:
+      self.db = MySQLdb.connect(host, user, p, db, port)
+      self.cur= self.db.cursor()
+      self.table_name = table_name
+      print('MySQLdb.connect established') 
+    except Exception as e:
+      print('ERROR MySQLdb.connect ', e) 
 
 
-  def insert(self, entries):
+  def insert(self, entries, commit=False):
     for entry in entries:
       k_v_pair = ""
       for attr, val in entry.iteritems():
-        k_v_pair += "%s = %s," % (attr, val) 
+        if val == '': continue
+        k_v_pair += "%s = \'%s\'," % (attr, val) 
       sql = "INSERT %s set %s" % (self.table_name, k_v_pair[:-1])
       print sql
-      k_v_pair = ''
+      self.cur.execute(sql)
+
+    if commit: self.db.commit()
+
 
