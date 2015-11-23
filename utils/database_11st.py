@@ -25,12 +25,12 @@ class database_11st(parser_11st):
       print('ERROR MySQLdb.connect ', e) 
 
 
-  def insert(self, entries, commit=False):
+  def insert(self, entries, attr, commit=False):
     for entry in entries:
       k_v_pair = ""
-      for attr, val in entry.iteritems():
-        if val == '': continue
-        k_v_pair += "%s = \'%s\'," % (attr, val) 
+      for field_name in attr:
+        value = entry[field_name].strip().replace('"', '')
+        k_v_pair += "%s = \"%s\"," % (field_name, value) 
       sql = "INSERT %s set %s" % (self.table_name, k_v_pair[:-1])
       print sql
       self.cur.execute(sql)

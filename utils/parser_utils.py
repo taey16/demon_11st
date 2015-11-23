@@ -1,5 +1,5 @@
 
-# coding: utf8
+# -*- coding: UTF-8 -*-
 
 from parser_11st import parser_11st
 
