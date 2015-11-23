@@ -15,4 +15,4 @@ hashing, 16bit lookup
 
 C
 
-caffe C++ prediction example with oversample support.
+caffe C++ prediction example with oversample support(as well as batched prediction)
