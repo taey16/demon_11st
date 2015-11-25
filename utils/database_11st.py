@@ -3,6 +3,8 @@
 
 from parser_11st import parser_11st
 import MySQLdb
+import sys
+import time
 
 class database_11st(parser_11st):
 
@@ -27,13 +29,18 @@ class database_11st(parser_11st):
 
   def insert(self, entries, attr, commit=False):
     for entry in entries:
-      k_v_pair = ""
-      for field_name in attr:
-        value = entry[field_name].strip().replace('"', '')
-        k_v_pair += "%s = \"%s\"," % (field_name, value) 
-      sql = "INSERT %s set %s" % (self.table_name, k_v_pair[:-1])
-      print sql
-      self.cur.execute(sql)
+      try:
+        k_v_pair = ''
+        for field_name in attr:
+          value = entry[field_name].strip().replace('"', '')
+          k_v_pair += '%s = \"%s\",' % (field_name, value) 
+        sql = 'INSERT %s SET %s' % (self.table_name, k_v_pair[:-1])
+        print sql
+        sys.stdout.flush()
+        self.cur.execute(sql)
+        time.sleep(0.01)
+      except Exception as e:
+        print('ERROR insert %s' % entry['__prd_no__'], e)
 
     if commit: self.db.commit()
 
