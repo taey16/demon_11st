@@ -21,10 +21,12 @@ class database_11st(parser_11st):
     try:
       self.db = MySQLdb.connect(host, user, p, db, port)
       self.cur= self.db.cursor()
+      self.cur.execute("SET NAMES \'utf8\'")
       self.table_name = table_name
       print('MySQLdb.connect established') 
     except Exception as e:
       print('ERROR MySQLdb.connect ', e) 
+      sys.exit(-1)
 
 
   def insert(self, entries, attr, commit=False):
@@ -37,8 +39,9 @@ class database_11st(parser_11st):
         sql = 'INSERT %s SET %s' % (self.table_name, k_v_pair[:-1])
         print sql
         sys.stdout.flush()
+        self.cur.execute("SET NAMES \'utf8\'")
         self.cur.execute(sql)
-        time.sleep(0.01)
+        #time.sleep(0.01)
       except Exception as e:
         print('ERROR insert %s' % entry['__prd_no__'], e)
 
