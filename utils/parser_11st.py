@@ -42,7 +42,7 @@ class parser_11st:
      '<__dctgr_nm__>', 
      '<__tag__>', 
      '<__gender_ctgr__>', 
-     '<__object_roi__>'
+     '<__object_roi__>',
      '<__seller_no__>', 
      '<__seller_nm__>', 
      '<__seller_score__>'
