@@ -102,8 +102,12 @@ class agent(object):
   def extract_feature(self, image, blob_name, oversample=True):
     try:
       scores = self.net.predict([image], oversample)
-      feature = np.reshape(np.squeeze(
-        self.net.blobs[blob_name].data), (1,10*1024))
+      if oversample:
+        feature = np.reshape(np.squeeze(
+          self.net.blobs[blob_name].data), (1,10*1024))
+      else:
+        feature = np.reshape(np.squeeze(
+          self.net.blobs[blob_name].data), (1,1024))
       return feature
     except Exception as err:
       print('ERROR extract_feature: %s', err)

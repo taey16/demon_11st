@@ -45,7 +45,7 @@ def url_request_handler():
       time.time() - download_starttime)
 
     fe_starttime = time.time()
-    feature = app.agent.extract_feature(image, 'pool5/7x7_s1')
+    feature = app.agent.extract_feature(image, 'pool5/7x7_s1', app.oversample)
     logging.info('extract_feature done, %.4f', time.time() - fe_starttime)
     feature = app.indexer.hashing(feature)
     feature = app.indexer.pack_bit_16(feature)
@@ -90,7 +90,7 @@ def browser_request_handler():
     filename = app.korean_url_handler.download_image(imageurl)
     image = app.agent.load_image(filename)
 
-    feature = app.agent.extract_feature(image, 'pool5/7x7_s1')
+    feature = app.agent.extract_feature(image, 'pool5/7x7_s1', app.oversample)
     logging.info('extract_feature done')
     feature_probe = feature
     feature = app.indexer.hashing(feature)
@@ -134,10 +134,11 @@ def index():
 
 
 class application(web_server):
-  def __init__(self, port, net_args, category_no, max_num_items, database_filename):
+  def __init__(self, port, net_args, oversample, category_no, max_num_items, database_filename):
     self.net_args = net_args
     self.database_filename = database_filename
     # Initialize classifier
+    app.oversample = oversample
     app.agent = agent(**self.net_args)
     logging.info('Initialize vision model done')
     app.agent.net.forward()
@@ -162,11 +163,12 @@ if __name__ == '__main__':
       '/home/taey16/storage/models/inception5/inception5.prototxt',
     'pretrained_model_file': 
       '/home/taey16/storage/models/inception5/inception5.caffemodel',
-    'gpu_mode': True, 'device_id': 1,
+    'gpu_mode': True, 'device_id': 0,
     'image_dim': 384, 'raw_scale': 255,
   }
  
   port = '8080'
+  oversample = False
 
   # set indexer args
   category_no = []
@@ -183,7 +185,8 @@ if __name__ == '__main__':
   max_num_items.append(42900)
 
   database_filename = \
-  '/home/taey16/storage/product/11st_julia/demo_%s.txt.wrap_size0.pickle'
+    '/home/taey16/storage/product/11st_julia/demo_%s.txt.wrap_size0.oversampleFalse.pickle'
+    #'/home/taey16/storage/product/11st_julia/demo_%s.txt.wrap_size0.pickle'
 
-  app = application(port, net_args, category_no, max_num_items, database_filename)
+  app = application(port, net_args, oversample, category_no, max_num_items, database_filename)
 

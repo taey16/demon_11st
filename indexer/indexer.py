@@ -18,7 +18,7 @@ class indexer:
       self.database[k] = {}
       self.database[k]['meta'] = [None] * n
       self.database[k]['ref'] = \
-        np.zeros((n, 640)).astype(np.uint16)
+        np.zeros((n, 64)).astype(np.uint16)
 
 
   def remove_database(self, index_key):

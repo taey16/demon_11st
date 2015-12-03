@@ -58,9 +58,11 @@
       {% if has_result %}
       <!-- <h3>Similar style</h3> -->
       <center>
+        <!-- display query image -->
         <img img class="image_show" src="{{result[0]['meta']}}" height="192" width="192">
         <table class="d_table">
           <tr>
+            <!-- display neighbor -->
             {% for item in result[1:] %}
               <td> 
                 <img img class="image_show" src="{{item['meta']}}" height="192" width="192">
