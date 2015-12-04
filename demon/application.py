@@ -122,8 +122,8 @@ def browser_request_handler():
       'index.html', has_result=False, result=result, flag='fail')
 
   return flask.render_template(
-    #'index.html', has_result=True, result=result, flag='success')
     'index.html', has_result=True, result=result, flag=feature_probe[0,:])
+    #'index.html', has_result=True, result=result, flag='success')
 
 
 @app.route('/')
