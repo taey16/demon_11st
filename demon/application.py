@@ -168,7 +168,7 @@ if __name__ == '__main__':
   }
  
   port = '8080'
-  oversample = False
+  oversample = True
 
   # set indexer args
   category_no = []
@@ -185,8 +185,8 @@ if __name__ == '__main__':
   max_num_items.append(42900)
 
   database_filename = \
-    '/home/taey16/storage/product/11st_julia/demo_%s.txt.wrap_size0.oversampleFalse.pickle'
-    #'/home/taey16/storage/product/11st_julia/demo_%s.txt.wrap_size0.pickle'
+    '/home/taey16/storage/product/11st_julia/demo_%s.txt.wrap_size0.pickle'
+    #'/home/taey16/storage/product/11st_julia/demo_%s.txt.wrap_size0.oversampleFalse.pickle'
 
   app = application(port, net_args, oversample, category_no, max_num_items, database_filename)
 
