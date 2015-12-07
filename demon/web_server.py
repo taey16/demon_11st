@@ -13,6 +13,7 @@ class web_server:
   #port = '15002'
 
   def __init__(self, app, port=8080):
+    print('Start tornado server port: %d' % port)
     self.start_tornado(app, port)
 
 

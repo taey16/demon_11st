@@ -38,6 +38,8 @@ for n, url in enumerate(urls):
       print "Something happened! Error code", err.code
   except urllib2.URLError, err:
     print "Some other error happened:", err.reason
+  except err:
+    print "Unknown error:", err
 
-print 'total elapsed for 2000 samples %.4f' % time.time() - start_total
+print 'total elapsed for 2000 samples %.4f' % (time.time() - start_total)
 
