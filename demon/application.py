@@ -193,12 +193,12 @@ if __name__ == '__main__':
       '/home/taey16/storage/models/inception5/inception5.prototxt',
     'pretrained_model_file': 
       '/home/taey16/storage/models/inception5/inception5.caffemodel',
-    'gpu_mode': True, 'device_id': 0,
+    'gpu_mode': True, 'device_id': 1,
     'image_dim': 384, 'raw_scale': 255,
   }
  
-  port = 8080
-  #port = 15003
+  #port = 8080
+  port = 15003
   oversample = True
 
   # set indexer args
