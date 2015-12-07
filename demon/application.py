@@ -197,6 +197,7 @@ if __name__ == '__main__':
     'image_dim': 384, 'raw_scale': 255,
   }
  
+  #port = '8080'
   port = '8080'
   oversample = True
 
