@@ -51,7 +51,7 @@ def mosaic_request_handler():
     result_dic['signature'] = signature[0,:].tolist()
     result_json = json.dumps(result_dic)
   except Exception as err:
-    logging.info('URL Image open error: %s', err)
+    logging.info('moasic_request_handler error: %s', err)
     return None
 
   return result_json
