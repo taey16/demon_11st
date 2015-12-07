@@ -48,3 +48,18 @@ class database_11st(parser_11st):
     if commit: self.db.commit()
 
 
+  def update(self, entries):
+    for entry in entries:
+      try:
+        sql = "UPDATE %s SET dataset=\'11st_julia\' WHERE __org_img_url__ = \'%s\'" % \
+          (self.table_name, entry['__org_img_url__'])
+        print sql
+        sys.stdout.flush()
+        self.cur.execute("SET NAMES \'utf8\'")
+        self.cur.execute(sql)
+        #time.sleep(0.01)
+      except Exception as e:
+        print('ERROR insert %s' % entry['__prd_no__'], e)
+
+
+
