@@ -12,7 +12,7 @@ input_url_list = 'demo_example.txt'
 # get url list
 urls = [entry.strip() for entry in open(input_url_list, 'r')]
 # set API prefix
-url_prefix = 'http://175.126.56.112:8080/mosaic_request_handler?url=%s'
+url_prefix = 'http://175.126.56.112:15003/mosaic_request_handler?url=%s'
 
 #import pdb; pdb.set_trace()
 start_total = time.time()
