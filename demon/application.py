@@ -27,6 +27,36 @@ num_neighbors = 60
 app = flask.Flask(__name__)
 
 
+@app.route('/mosaic_request_handler', methods=['GET'])
+@crossdomain(origin='*')
+def mosaic_request_handler():
+  global_starttime = time.time()
+  imageurl = flask.request.args.get('url', '')
+  #import pdb; pdb.set_trace()
+  try:
+    download_starttime = time.time()
+    filename = app.korean_url_handler.download_image(imageurl)
+    image = app.agent.load_image(filename)
+    #logging.info('Image download done, %.4f', 
+    #  time.time() - download_starttime)
+
+    fe_starttime = time.time()
+    feature = app.agent.extract_feature(image, 'pool5/7x7_s1', app.oversample)
+    logging.info('extract_feature done, %.4f', time.time() - fe_starttime)
+    feature_binary = app.indexer.hashing(feature)
+    signature = app.indexer.pack_bit_16(feature_binary)
+    result_dic = {}
+    result_dic['__org_img_url__'] = imageurl
+    result_dic['feature'] = feature[0,:].tolist()
+    result_dic['signature'] = signature[0,:].tolist()
+    result_json = json.dumps(result_dic)
+  except Exception as err:
+    logging.info('URL Image open error: %s', err)
+    return None
+
+  return result_json
+
+
 @app.route('/url_request_handler', methods=['GET'])
 @crossdomain(origin='*')
 def url_request_handler():
@@ -173,6 +203,7 @@ if __name__ == '__main__':
   # set indexer args
   category_no = []
   max_num_items = []
+  """
   category_no.append('127681')
   max_num_items.append(140000)
   category_no.append('127687')
@@ -181,6 +212,7 @@ if __name__ == '__main__':
   max_num_items.append(43000)
   category_no.append('1645')
   max_num_items.append(26300)
+  """
   category_no.append('1612')
   max_num_items.append(42900)
 
