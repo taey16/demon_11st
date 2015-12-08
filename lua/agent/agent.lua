@@ -60,6 +60,21 @@ function model.predict(input)
   return scores, classes, class_name
 end
 
+
+function model.extract_feature(input, predicted)
+  local output = torch.FloatTensor()
+  local predicted = predicted or nil
+  if not predicted then
+    local data = preprocess(input)
+    model:forward(data:cuda())
+  end
+  output = model:get(1).output:float():squeeze()
+  output = output:view(output:nElement())
+  print(output:nElement())
+  return output
+end
+
+
 print '===> Loading agent success'
 return model
 

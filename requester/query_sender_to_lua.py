@@ -20,12 +20,15 @@ for n, url in enumerate(urls):
     if response <> None:
       # read json object into managable json object in python
       retrieved_items = json.loads(response.read())
-      elapsed_start = time.time() - start_request
-      print 'url,', retrieved_items['url']
-      #print 'category', retrieved_items['category']
-      print 'name', retrieved_items['name']
-      print 'score', retrieved_items['score']
-      print '%06d th sample, elapsed: %.4f msec.' % (n, elapsed_start)
+      if retrieved_items['result']:
+        elapsed_start = time.time() - start_request
+        print 'url,', retrieved_items['url']
+        #print 'category', retrieved_items['category']
+        print 'name', retrieved_items['name']
+        print 'score', retrieved_items['score']
+        print 'feature', retrieved_items['feature'][0:10]
+        print '%06d th sample, elapsed: %.4f msec.' % (n, elapsed_start)
+      else: raise Exception
     else:
       print 'No response to url:', url
     sys.stdout.flush()
@@ -38,6 +41,8 @@ for n, url in enumerate(urls):
       print "Something happened! Error code", err.code
   except urllib2.URLError, err:
     print "Some other error happened:", err.reason
+  except ValueError as err:
+    print "JSON value error,", err
   except Exception as err:
     print "Unknown error:", err
 

@@ -3,38 +3,54 @@ local app  = require('../waffle')
 local async= require 'async'
 local gm = require 'graphicsmagick'
 local model = paths.dofile('../agent/agent.lua')
+require 'image'
 
-local input = {}
 app.get("/mosaic_request_handler", function(req, res)
-  local q_url = req.url.args.query or nil
-  local q_cate= req.url.args.cate or nil
-  if q_url then
-    async.curl.get(q_url, 
+  local query_url = req.url.args.query or nil
+  local q_cate = req.url.args.cate or nil
+  local filename = paths.concat('/tmp/' .. tostring(torch.uniform())..'.jpg')
+  if query_url then
+    local wget_cmd = 'wget '..query_url..' -O '..filename
+    os.execute(wget_cmd)
+    print(wget_cmd)
+    os.execute('rm -f '..filename)
+    --[[
+    async.curl.get(query_url, 
       function(res)
         local data = gm.Image():fromString(res) 
         input = data:toTensor('float', 'RGB', 'DHW')
       end
     )
-    --print(input:size(1) .. 'x' .. 
-    --      input:size(2) .. 'x' .. 
-    --      input:size(3))
-    print('Start predict:' .. q_url)
-    scores, classes, class_name = model.predict(input)
-    --print(scores[{{1,5}}])
-    local result_scores = scores[{{1,5}}]:totable()
-    --print(#result_scores)
-    for i=1,5 do
-      print(class_name[i] .. ' ' .. result_scores[i])
-    end
-    result = {
-      url = q_url,
+    --]]
+    print('Start predict:' .. query_url)
+    print(filename)
+    scores, classes, class_name = model.predict(image.load(filename))
+    print('Start extract_feature:' .. query_url)
+    feature = model.extract_feature(input, true)
+    local table_scores = scores[{{1,5}}]:totable()
+    local table_feature= feature:totable()
+    local result = {
+      url = query_url,
       category = q_cate,
-      score = result_scores,
       name = class_name,
+      score = table_scores,
+      feature = table_feature,
       result = true} 
     res.json(result)
+
+    for i=1,5 do
+      print(class_name[i] .. ' ' .. table_scores[i])
+    end
   else
-    app.abort(400, 'request error', req, res)
+    --app.abort(400, 'request error', req, res)
+    local result = {
+      url = query_url,
+      category = q_cate,
+      name = nil,
+      score = nil,
+      feature = nil,
+      result = false} 
+    res.json(result)
   end
 end)
 
