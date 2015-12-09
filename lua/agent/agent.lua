@@ -35,6 +35,7 @@ sampleSize= {3, 224, 224}
 
 
 function preprocess(input)
+  assert(input)
   local input0 = resize_crop(input, loadSize, 0)
   local input1 = resize_crop(input, loadSize, 1)
   input0= mean_std_norm(input0, mean_std.mean, mean_std.std)
@@ -49,7 +50,9 @@ end
 
 
 function model.predict(input)
+  --print('model.predict')
   local data = preprocess(input)
+  --print('preprocess')
   local scores,classes
   scores = model:forward(data:cuda()):float()
   scores, classes = torch.mean(scores,1):view(-1):sort(true)
@@ -70,7 +73,7 @@ function model.extract_feature(input, predicted)
   end
   output = model:get(1).output:float():squeeze()
   output = output:view(output:nElement())
-  print(output:nElement())
+  --print(output:nElement())
   return output
 end
 

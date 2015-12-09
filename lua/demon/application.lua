@@ -13,8 +13,7 @@ app.get("/mosaic_request_handler", function(req, res)
   if query_url then
     local wget_cmd = 'wget '..query_url..' -O '..filename
     os.execute(wget_cmd)
-    print(wget_cmd)
-    os.execute('rm -f '..filename)
+    --print(wget_cmd)
     --[[
     async.curl.get(query_url, 
       function(res)
@@ -23,8 +22,7 @@ app.get("/mosaic_request_handler", function(req, res)
       end
     )
     --]]
-    print('Start predict:' .. query_url)
-    print(filename)
+    print('Start predict:'..query_url..' '..filename)
     scores, classes, class_name = model.predict(image.load(filename))
     print('Start extract_feature:' .. query_url)
     feature = model.extract_feature(input, true)
@@ -52,6 +50,7 @@ app.get("/mosaic_request_handler", function(req, res)
       result = false} 
   end
   res.json(result)
+  os.execute('rm -f '..filename)
 end)
 
 
