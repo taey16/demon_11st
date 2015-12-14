@@ -8,7 +8,9 @@ require 'image'
 app.get("/mosaic_request_handler", function(req, res)
   local query_url = req.url.args.query or nil
   local q_cate = req.url.args.cate or nil
-  local filename = paths.concat('/tmp/' .. tostring(torch.uniform())..'.jpg')
+  local filename = paths.concat(
+    '/tmp/' .. tostring(torch.uniform())..'.jpg'
+  )
   local result = {}
   if query_url then
     local wget_cmd = 'wget '..query_url..' -O '..filename
