@@ -13,7 +13,7 @@ app.get("/mosaic_request_handler", function(req, res)
   )
   local result = {}
   if query_url then
-    local wget_cmd = 'wget '..query_url..' -O '..filename
+    local wget_cmd = 'wget '..query_url..' -O '..filename.. ' -q'
     os.execute(wget_cmd)
     --print(wget_cmd)
     --[[

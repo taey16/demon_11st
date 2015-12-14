@@ -6,7 +6,7 @@ import json
 import time
 import sys
 
-input_url_list = 'demo_example.txt'
+input_url_list = 'demo_all.txt.url.txt'
 urls = [entry.strip() for entry in open(input_url_list, 'r')]
 url_prefix = 'http://10.202.35.0:8080/mosaic_request_handler/?query=%s&cate=cate'
 
