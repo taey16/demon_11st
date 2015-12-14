@@ -32,14 +32,14 @@ for n, url in enumerate(urls):
     else:
       print 'No response to url:', url
     sys.stdout.flush()
-  except urllib2.HTTPError, err:
+  except urllib2.HTTPError as err:
     if err.code == 404:
       print "Page not found!"
     elif err.code == 403:
       print "Access denied!"
     else:
       print "Something happened! Error code", err.code
-  except urllib2.URLError, err:
+  except urllib2.URLError as err:
     print "Some other error happened:", err.reason
   except ValueError as err:
     print "JSON value error,", err
