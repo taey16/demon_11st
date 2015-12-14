@@ -1,5 +1,7 @@
 
-local app  = require('../waffle')
+local app  = require('../waffle') {
+  autocache = true
+}
 local async= require 'async'
 local gm = require 'graphicsmagick'
 local model = paths.dofile('../agent/agent.lua')
