@@ -5,14 +5,15 @@ require 'cudnn'
 paths.dofile('../utils/image_utils.lua')
 
 local model = {}
-local gpu_id = 4
+local gpu_id = 1
 
 print('===> setDevice:' .. gpu_id)
 cutorch.setDevice(gpu_id)
 
 print '===> Loading model'
 local model_filename = 
-  '/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.bn_removed.t7'
+  '/storage/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.bn_removed.t7'
+  --'/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.bn_removed.t7'
 local model = torch.load(model_filename)
 model:get(2).modules[#model:get(2).modules] = nil
 model:get(2):add(cudnn.SoftMax())
@@ -23,11 +24,15 @@ collectgarbage()
 
 print '===> Loading mean, std' 
 local mean_std = 
-  torch.load('/data2/product/det/torch_cache/meanstdCache.t7')
+  torch.load(
+    '/storage/product/det/torch_cache/meanstdCache.t7'
+    --'/data2/product/det/torch_cache/meanstdCache.t7'
+  )
 
 print '===> Loading classes' 
 class_filename= 
-  '/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/classes.t7'
+  '/storage/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/classes.t7'
+  --'/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/classes.t7'
 local cls_config = torch.load(class_filename)
 
 loadSize  = {3, 256, 256}

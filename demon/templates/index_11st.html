@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="11st browser API">
+    <meta name="author" content="http://www.skplanet.com">
+    <title>Alfred</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+    <style>
+    body {
+      font-family: "Gill Sans", Helvetica, Arial, sans-serif;
+      line-height:1.5em;
+      color: #232323;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 {
+      font-family: Gill Sans, serif;
+      line-height:1.5em;
+      border-bottom: 1px solid #ccc;
+    }
+    </style>
+  </head>
+
+  <body>
+    <!-- Begin page content -->
+    <div class="container">
+      <center>
+      <form role="form" action="lua_wrapper_request_handler" method="get">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" name="url" id="url" placeholder="Provide an image URL">
+            <input type="hidden" class="form-control" name="is_browser" id="is_browser" value="1">
+            <span class="input-group-btn">
+              <input class="btn btn-primary" value="Send" type="submit" id="lua_wrapper_request_handler"></input>
+            </span>
+          </div><!-- /input-group -->
+        </div>
+      </form>
+    </div>
+      </center>
+
+      {% if has_result %}
+      <!-- <h3>Similar style</h3> -->
+      <center>
+        <!-- display query image -->
+        <img img class="image_show" src="{{result['url']}}" height="256" width="256">
+        <h3>Style tag:
+        <table class="d_table">
+          <tr>
+            <!-- display neighbor -->
+            {% for item in result['predicted_category'] %}
+              <td> 
+              <a href="http://search.11st.co.kr/SearchPrdAction.tmall?method=getTotalSearchSeller&targetTab=T&isGnb=Y&prdType=&category=&cmd=&pageSize=&lCtgrNo=&mCtgrNo=&sCtgrNo=&dCtgrNo=&fromACK=&semanticFromGNB=&gnbTag=TO&schFrom=&ID=&ctgrNo=&srCtgrNo=&kwd={{item}}&adUrl=&adKwdTrcNo=1201512143949017533&adPrdNo=218706706" target="parent">{{item}}({{result['scores'][loop.index-1]}}%)</a>,&nbsp &nbsp
+              </td>
+            {% endfor %}
+          </tr>
+        </table>
+        </h3>
+        <!-- <p>{{ flag }} sec.</p> -->
+        <h3>Detection result: under construction</h3>
+        <h3>Similar style search: under construction</h3>
+        <h3>Exact match: under construction</h3>
+        <h3>Style Coordination(Recommandation): under construction</h3>
+        <!--
+        <center>Display feature values for the query</center>
+        {% for value in flag %}
+          {{value}}
+          {% if loop.index is divisibleby 10 %} </br> {% endif %}
+        {% endfor %}
+        -->
+      {% else %}
+        <h3>Welcome</h3>
+      {% endif %}
+    </center>
+
+    <hr>
+    <div id="footer">
+      <div class="container">
+        <p>&copy; Machine Intelligence Lab., SK Planet</p>
+      </div>
+    </div>
+  </body>
+</html>
