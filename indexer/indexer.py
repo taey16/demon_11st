@@ -38,6 +38,19 @@ class indexer:
     return packed_feature
 
 
+  def pack_bit_64(self, binary_feature):
+    binary_feature = (np.packbits(binary_feature, axis=1)).astype(np.uint64)
+    shifted_binary = binary_feature << 8
+    packed_feature = shifted_binary[:,0::2] + binary_feature[:,1::2]
+    binary_feature = packed_feature
+    shifted_binary = binary_feature << 16
+    packed_feature = shifted_binary[:,0::2] + binary_feature[:,1::2]
+    binary_feature = packed_feature
+    shifted_binary = binary_feature << 32
+    packed_feature = shifted_binary[:,0::2] + binary_feature[:,1::2]
+    return packed_feature
+
+
   def load_category(self, database_filename):
     assert(len(self.index_key) > 0)
     for category_id in self.index_key: 

@@ -44,7 +44,8 @@ def mosaic_request_handler():
     feature = app.agent.extract_feature(image, 'pool5/7x7_s1', app.oversample)
     logging.info('extract_feature done, %.4f', time.time() - fe_starttime)
     feature_binary = app.indexer.hashing(feature)
-    signature = app.indexer.pack_bit_16(feature_binary)
+    #signature = app.indexer.pack_bit_16(feature_binary)
+    signature = app.indexer.pack_bit_64(feature_binary)
     result_dic = {}
     result_dic['__org_img_url__'] = imageurl
     result_dic['feature'] = feature[0,:].tolist()
@@ -193,7 +194,7 @@ if __name__ == '__main__':
       '/home/taey16/storage/models/inception5/inception5.prototxt',
     'pretrained_model_file': 
       '/home/taey16/storage/models/inception5/inception5.caffemodel',
-    'gpu_mode': True, 'device_id': 1,
+    'gpu_mode': True, 'device_id': 0,
     'image_dim': 384, 'raw_scale': 255,
   }
  
