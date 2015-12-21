@@ -32,6 +32,7 @@ app = flask.Flask(__name__)
 def mosaic_request_handler():
   global_starttime = time.time()
   imageurl = flask.request.args.get('url', '')
+  result_dic = {}
   #import pdb; pdb.set_trace()
   try:
     download_starttime = time.time()
@@ -46,7 +47,6 @@ def mosaic_request_handler():
     feature_binary = app.indexer.hashing(feature)
     #signature = app.indexer.pack_bit_16(feature_binary)
     signature = app.indexer.pack_bit_64(feature_binary)
-    result_dic = {}
     result_dic['__org_img_url__'] = imageurl
     result_dic['feature'] = feature[0,:].tolist()
     result_dic['signature'] = signature[0,:].tolist()
@@ -65,6 +65,7 @@ def url_request_handler():
   global_starttime = time.time()
   imageurl = flask.request.args.get('url', '')
   category = flask.request.args.get('category', '')
+  result_dic = {}
   try:
     #string_buffer = StringIO.StringIO(urllib.urlopen(imageurl).read())
     #image = app.agent.load_image(string_buffer)
@@ -87,7 +88,6 @@ def url_request_handler():
     assert(len(neighbor_list) == len(neighbor_distance))
     logging.info('get nearest neighbor done, %.4f', time.time() - nn_starttime)
 
-    result_dic = {}
     result_dic['request_category'] = category
     result_dic['query'] = imageurl
     result_dic['retrieval_list'] = []
@@ -159,13 +159,15 @@ def browser_request_handler():
 
 @app.route('/')
 def index():
-  #import pdb; pdb.set_trace()
   return flask.render_template(
     'index.html', has_result=False, result=[], flag='fail')
 
 
 class application(web_server):
-  def __init__(self, port, net_args, oversample, category_no, max_num_items, database_filename):
+  def __init__(self, 
+    port, 
+    net_args, oversample, 
+    category_no, max_num_items, database_filename):
     self.net_args = net_args
     self.database_filename = database_filename
     # Initialize classifier
@@ -223,4 +225,5 @@ if __name__ == '__main__':
     #'/home/taey16/storage/product/11st_julia/demo_%s.txt.wrap_size0.oversampleFalse.pickle'
 
   app = application(port, net_args, oversample, category_no, max_num_items, database_filename)
+
 
