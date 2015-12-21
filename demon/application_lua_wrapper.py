@@ -11,9 +11,13 @@ from flask_decorator import crossdomain
 
 import numpy as np
 
+host_ip = '10.202.35.109'
+feature_demon_port = 8080
+port = 8081
 index_filename = 'index_11st.html'
-url_prefix = 'http://10.202.35.109:8080/lua_wrapper_request_handler/?query=%s'
-UPLOAD_FOLDER = '/tmp/caffe_demos_uploads'
+url_prefix = 'http://%(host_ip)s:%(port)d/lua_wrapper_request_handler/?url=%%s' % \
+  {'host_ip': host_ip, 'port': feature_demon_port}
+
 
 # global the flask app object
 app = flask.Flask(__name__)
@@ -32,8 +36,9 @@ def call_feature_demon(imageurl):
       if retrieved_items['result']:
         result_dic['url'] = retrieved_items['url']
         result_dic['predicted_category'] = retrieved_items['category']
-        result_dic['scores'] = np.trim_zeros((np.asarray(retrieved_items['score']) * 100).astype(np.uint8))
-        print(result_dic['scores'].shape)
+        result_dic['scores'] = \
+          np.trim_zeros((np.asarray(retrieved_items['score']) * 100).astype(np.uint8))
+        #print(result_dic['scores'].shape)
         result_dic['predicted_category'] = result_dic['predicted_category'][0:result_dic['scores'].size]
         result_dic['feature'] = np.asarray(retrieved_items['feature'])
   except Exception as err:
@@ -50,7 +55,7 @@ def lua_wrapper_request_handler():
   imageurl = flask.request.args.get('url', '')
   is_browser = flask.request.args.get('is_browser', '')
   result_dic = {}
-  #import pdb; pdb.set_trace()
+  import pdb; pdb.set_trace()
   try:
     fe_starttime = time.time()
     result_dic = call_feature_demon(imageurl)
@@ -85,6 +90,5 @@ class application(web_server):
 if __name__ == '__main__':
   logging.getLogger().setLevel(logging.INFO)
  
-  port = 8081
   app = application(port)
 

@@ -3,12 +3,12 @@ local app  = require('../waffle') {
   autocache = true
 }
 local async= require 'async'
-local gm = require 'graphicsmagick'
+--local gm = require 'graphicsmagick'
 local model = paths.dofile('../agent/agent.lua')
 require 'image'
 
 app.get("/lua_wrapper_request_handler", function(req, res)
-  local query_url = req.url.args.query or nil
+  local query_url = req.url.args.url or nil
   local filename = paths.concat(
     '/tmp/' .. tostring(torch.uniform())..'.jpg'
   )
