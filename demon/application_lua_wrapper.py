@@ -11,7 +11,7 @@ from flask_decorator import crossdomain
 
 import numpy as np
 
-host_ip = '10.202.35.109'
+host_ip = '10.202.35.0'
 feature_demon_port = 8080
 port = 8081
 index_filename = 'index_11st.html'
@@ -55,7 +55,7 @@ def lua_wrapper_request_handler():
   imageurl = flask.request.args.get('url', '')
   is_browser = flask.request.args.get('is_browser', '')
   result_dic = {}
-  import pdb; pdb.set_trace()
+  #import pdb; pdb.set_trace()
   try:
     fe_starttime = time.time()
     result_dic = call_feature_demon(imageurl)

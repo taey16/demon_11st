@@ -53,9 +53,11 @@
           <tr>
             <!-- display neighbor -->
             {% for item in result['predicted_category'] %}
-              <td> 
-              <a href="http://search.11st.co.kr/SearchPrdAction.tmall?method=getTotalSearchSeller&targetTab=T&isGnb=Y&prdType=&category=&cmd=&pageSize=&lCtgrNo=&mCtgrNo=&sCtgrNo=&dCtgrNo=&fromACK=&semanticFromGNB=&gnbTag=TO&schFrom=&ID=&ctgrNo=&srCtgrNo=&kwd={{item}}&adUrl=&adKwdTrcNo=1201512143949017533&adPrdNo=218706706" target="parent">{{item}}({{result['scores'][loop.index-1]}}%)</a>,&nbsp &nbsp
-              </td>
+              <tr>
+                <td> 
+                <a href="http://search.11st.co.kr/SearchPrdAction.tmall?method=getTotalSearchSeller&targetTab=T&isGnb=Y&prdType=&category=&cmd=&pageSize=&lCtgrNo=&mCtgrNo=&sCtgrNo=&dCtgrNo=&fromACK=&semanticFromGNB=&gnbTag=TO&schFrom=&ID=&ctgrNo=&srCtgrNo=&kwd={{item}}&adUrl=&adKwdTrcNo=1201512143949017533&adPrdNo=218706706" target="parent">{{item}}({{result['scores'][loop.index-1]}}%)</a>,&nbsp &nbsp
+                </td>
+              </tr>
             {% endfor %}
           </tr>
         </table>
