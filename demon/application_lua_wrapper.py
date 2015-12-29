@@ -30,6 +30,13 @@ exifutils = exifutil()
 app = flask.Flask(__name__)
 
 
+def gen(camera):
+  while True:
+    frame = camera.get_frame()
+    yield (b'--frame\r\n'
+           b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
 def call_feature_demon(imageurl):
   result_dic = {}
   #import pdb; pdb.set_trace()
