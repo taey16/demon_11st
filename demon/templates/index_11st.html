@@ -10,18 +10,32 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
+    <script type="text/javascript">
+      $(document).ready(
+        function() {
+          $('#imagefile').change(
+            function() {
+              if ($(this).val()) {
+                $('#formupload').submit();
+              }
+            }
+          );
+        }
+      );
+    </script>
+
     <style>
-    body {
-      font-family: "Gill Sans", Helvetica, Arial, sans-serif;
-      line-height:1.5em;
-      color: #232323;
-      -webkit-font-smoothing: antialiased;
-    }
-    h1, h2, h3 {
-      font-family: Gill Sans, serif;
-      line-height:1.5em;
-      border-bottom: 1px solid #ccc;
-    }
+      body {
+        font-family: "Gill Sans", Helvetica, Arial, sans-serif;
+        line-height:1.5em;
+        color: #232323;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1, h2, h3 {
+        font-family: Gill Sans, serif;
+        line-height:1.5em;
+        border-bottom: 1px solid #ccc;
+      }
     </style>
   </head>
 
@@ -40,18 +54,28 @@
           </div><!-- /input-group -->
         </div>
       </form>
-    </div>
+      <form id="formupload" class="form-inline" role="form" action="lua_wrapper_request_handler_upload" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="imagefile">Upload an image:</label>
+          <input type="file" name="imagefile" id="imagefile">
+        </div>
+      </form>
       </center>
 
       {% if has_result %}
       <!-- <h3>Similar style</h3> -->
       <center>
         <!-- display query image -->
-        <img img class="image_show" src="{{result['url']}}" height="256" width="256">
+        <img img class="image_show" src="{{result['url']}}" height="292" width="292">
         <h3>Style tag:
         <table class="d_table">
           <tr>
             <!-- display neighbor -->
+            {% for item in result['predicted_category_gc'] %}
+              <td> 
+              <a href="http://search.11st.co.kr/SearchPrdAction.tmall?method=getTotalSearchSeller&targetTab=T&isGnb=Y&prdType=&category=&cmd=&pageSize=&lCtgrNo=&mCtgrNo=&sCtgrNo=&dCtgrNo=&fromACK=&semanticFromGNB=&gnbTag=TO&schFrom=&ID=&ctgrNo=&srCtgrNo=&kwd={{item}}&adUrl=&adKwdTrcNo=1201512143949017533&adPrdNo=218706706" target="parent">{{item}}({{result['scores_gc'][loop.index-1]}}%)</a>,&nbsp &nbsp
+              </td>
+            {% endfor %}
             {% for item in result['predicted_category'] %}
               <tr>
                 <td> 

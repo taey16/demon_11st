@@ -5,17 +5,18 @@ require 'cudnn'
 paths.dofile('../utils/image_utils.lua')
 
 local model = {}
-local gpu_id = 3
+local gpu_id = 1
 
 print('===> setDevice:' .. gpu_id)
 cutorch.setDevice(gpu_id)
 
 print '===> Loading model'
 local model_filename = 
-  --'/storage/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.bn_removed.t7'
-  --'/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.bn_removed.t7'
+  '/storage/product/clothes/torch_cache/inception7/clothes_gpu2_lr0.045_digits_gpu_2_lr0.045SatDec514:08:122015MonDec2117:51:172015/model_11.bn_removed.t7'
+  --'/storage/product/clothes/torch_cache/inception7/clothes_gpu2_lr0.045_digits_gpu_2_lr0.045SatDec514:08:122015MonDec2117:51:172015/model_8.bn_removed.t7'
   --'/storage/product/clothes/torch_cache/inception7/clothes_gpu2_lr0.045_digits_gpu_2_lr0.045SatDec514:08:122015MonDec2117:51:172015/model_1.bn_removed.t7'
-  '/storage/product/clothes/torch_cache/inception7/clothes_gpu2_lr0.045_digits_gpu_2_lr0.045SatDec514:08:122015MonDec2117:51:172015/model_8.bn_removed.t7'
+  --'/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.bn_removed.t7'
+  --'/storage/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/model_29.bn_removed.t7'
 local model = torch.load(model_filename)
 --[[
 model:get(2).modules[#model:get(2).modules] = nil
@@ -29,16 +30,16 @@ collectgarbage()
 print '===> Loading mean, std' 
 local mean_std = 
   torch.load(
-    --'/storage/product/det/torch_cache/meanstdCache.t7'
-    --'/data2/product/det/torch_cache/meanstdCache.t7'
     '/storage/product/clothes/torch_cache/meanstdCache.t7'
+    --'/data2/product/det/torch_cache/meanstdCache.t7'
+    --'/storage/product/det/torch_cache/meanstdCache.t7'
   )
 
 print '===> Loading classes' 
 local class_filename= 
-  --'/storage/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/classes.t7'
-  --'/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/classes.t7'
   '/storage/product/clothes/torch_cache/inception7/clothes_gpu2_lr0.045_digits_gpu_2_lr0.045SatDec514:08:122015MonDec2117:51:172015/classes.t7'
+  --'/data2/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/classes.t7'
+  --'/storage/product/det/torch_cache/inception6/det_stnThuDec318:29:322015/classes.t7'
 local cls_config = torch.load(class_filename)
 
 local loadSize  = {3, 292, 292}
@@ -47,7 +48,7 @@ local sampleSize= {3, 256, 256}
 --sampleSize= {3, 224, 224}
 
 
-function preprocess(input)
+function model.preprocess(input)
   assert(input)
   local input0 = resize_crop(input, loadSize, 0)
   local input1 = resize_crop(input, loadSize, 1)
@@ -64,7 +65,7 @@ end
 
 function model.predict(input)
   --print('model.predict')
-  local data = preprocess(input)
+  local data = model.preprocess(input)
   --print('preprocess')
   local scores,classes
   scores = model:forward(data:cuda()):float()

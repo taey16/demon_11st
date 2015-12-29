@@ -2,21 +2,28 @@
 # -*- coding: UTF-8 -*-
 
 import flask
+import werkzeug
 from web_server import web_server
+from flask_decorator import crossdomain
 import urllib, urllib2
 import json
 import logging
-import time
-from flask_decorator import crossdomain
+import time, datetime
+import os,sys
 
 import numpy as np
+util_root = '../utils'
+sys.path.insert(0, util_root)
+from exifutil import exifutil
 
-host_ip = '10.202.35.0'
+host_ip = '10.202.35.109'
 feature_demon_port = 8080
 port = 8081
 index_filename = 'index_11st.html'
 url_prefix = 'http://%(host_ip)s:%(port)d/lua_wrapper_request_handler/?url=%%s' % \
   {'host_ip': host_ip, 'port': feature_demon_port}
+
+exifutils = exifutil()
 
 
 # global the flask app object
@@ -41,6 +48,13 @@ def call_feature_demon(imageurl):
         #print(result_dic['scores'].shape)
         result_dic['predicted_category'] = result_dic['predicted_category'][0:result_dic['scores'].size]
         result_dic['feature'] = np.asarray(retrieved_items['feature'])
+
+        result_dic['predicted_category_gc'] = retrieved_items['category_gc']
+        result_dic['scores_gc'] = \
+          np.trim_zeros((np.asarray(retrieved_items['score_gc']) * 100).astype(np.uint8))
+        #print(result_dic['scores'].shape)
+        result_dic['predicted_category_gc'] = result_dic['predicted_category_gc'][0:result_dic['scores_gc'].size]
+        
   except Exception as err:
     logging.info('call_feature_demon error: %s', err)
     return {'result': False, 'feature': None}
@@ -72,6 +86,29 @@ def lua_wrapper_request_handler():
   else:
     return flask.render_template(
       index_filename, has_result=True, result=result_dic, flag=[0])
+
+
+UPLOAD_FOLDER = '/storage/enroll'
+@app.route('/lua_wrapper_request_handler_upload', methods=['POST'])
+def lua_wrapper_request_handler_upload():
+  result_dic = {}
+  try:
+    imagefile = flask.request.files['imagefile']
+    filename_ = str(datetime.datetime.now()).replace(' ', '_') + \
+      werkzeug.secure_filename(imagefile.filename)
+    filename = os.path.join(UPLOAD_FOLDER, filename_)
+    imagefile.save(filename)
+    logging.info('Saving to %s', filename)
+    image = exifutils.open_oriented_im(filename)
+    imageurl = 'http://10.202.35.109:2596/PBrain/enroll/%s' % filename_
+    result_dic = call_feature_demon(imageurl)
+  except Exception as err:
+    logging.info('Uploaded image open error: %s', err)
+    return flask.render_template(
+      index_filename, has_result=False, result=result_dic, flag='fail')
+
+  return flask.render_template(
+    index_filename, has_result=True, result=result_dic, flag=[0])
 
 
 @app.route('/')
