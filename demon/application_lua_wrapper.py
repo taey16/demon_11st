@@ -10,20 +10,28 @@ import json
 import logging
 import time, datetime
 import os,sys
-
 import numpy as np
+
 util_root = '../utils'
 sys.path.insert(0, util_root)
 from exifutil import exifutil
 
+vsm_root = '../vsm'
+sys.path.insert(0, vsm_root)
+from vsm import vsm
+
+
 host_ip = '10.202.4.219'
 feature_demon_port = 8080
 port = 8081
-index_filename = 'index_11st.html'
+html_filename = 'index_11st.html'
+html_filename_vsm = 'index_vsm.html'
+sentense_filename = '/works/VSM/documents/COCO_sentense.txt'
 url_prefix = 'http://%(host_ip)s:%(port)d/lua_wrapper_request_handler/?url=%%s' % \
   {'host_ip': host_ip, 'port': feature_demon_port}
 
 exifutils = exifutil()
+vsm = vsm(sentense_filename)
 
 
 # global the flask app object
@@ -36,6 +44,23 @@ def gen(camera):
     yield (b'--frame\r\n'
            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+
+@app.route('/vsm_request_handler', methods=['GET'])
+@crossdomain(origin='*')
+def vsm_request_handler():
+  #import pdb; pdb.set_trace()
+  query_string = flask.request.args.get('query_string', '')
+  result_dic = {}
+  try:
+    result_dic = vsm.do_search(query_string)
+    if result_dic['result']:
+      return flask.render_template(
+        html_filename_vsm, has_result=True, result=result_dic, flag=[0])
+  except Exception as err:
+    logging.info(err)
+    return flask.render_template(
+      html_filename_vsm, has_result=False, result=result_dic, flag=[0])
+  
 
 def call_feature_demon(imageurl):
   result_dic = {}
@@ -73,7 +98,6 @@ def call_feature_demon(imageurl):
 @app.route('/lua_wrapper_request_handler', methods=['GET'])
 @crossdomain(origin='*')
 def lua_wrapper_request_handler():
-  global_starttime = time.time()
   imageurl = flask.request.args.get('url', '')
   is_browser = flask.request.args.get('is_browser', '')
   result_dic = {}
@@ -86,18 +110,19 @@ def lua_wrapper_request_handler():
     if is_browser <> '1': return {'result': False}
     else:
       return flask.render_template(
-        index_filename, has_result=False, result=result_dic, flag='fail')
+        html_filename, has_result=False, result=result_dic, flag='fail')
 
   if is_browser <> '1':
     result_json = json.dumps(result_dic)
     return result_json
   else:
     return flask.render_template(
-      index_filename, has_result=True, result=result_dic, flag=[0])
+      html_filename, has_result=True, result=result_dic, flag=[0])
 
 
 UPLOAD_FOLDER = '/storage/enroll'
 @app.route('/lua_wrapper_request_handler_upload', methods=['POST'])
+@crossdomain(origin='*')
 def lua_wrapper_request_handler_upload():
   result_dic = {}
   try:
@@ -115,17 +140,18 @@ def lua_wrapper_request_handler_upload():
   except Exception as err:
     logging.info('Uploaded image open error: %s', err)
     return flask.render_template(
-      index_filename, has_result=False, result=result_dic, flag='fail')
+      html_filename, has_result=False, result=result_dic, flag='fail')
 
   return flask.render_template(
-    index_filename, has_result=True, result=result_dic, flag=[0])
+    html_filename, has_result=True, result=result_dic, flag=[0])
 
 
 @app.route('/')
+@crossdomain(origin='*')
 def index():
   #import pdb; pdb.set_trace()
   return flask.render_template(
-    index_filename, has_result=False, result=[], flag='fail')
+    html_filename, has_result=False, result=[], flag='fail')
 
 
 class application(web_server):

@@ -60,6 +60,16 @@
           <input type="file" name="imagefile" id="imagefile">
         </div>
       </form>
+      <form role="form" action="vsm_request_handler" method="get">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" name="query_string" id="query_string" placeholder="Search">
+            <span class="input-group-btn">
+              <input class="btn btn-primary" value="Query" type="submit" id="vsm_request_handler"></input>
+            </span>
+          </div>
+        </div>
+      </form>
       </center>
 
       {% if has_result %}

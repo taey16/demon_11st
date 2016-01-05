@@ -19,12 +19,17 @@ class vsm:
   def __init__(self, sent_filename="./documents/COCO_sentense.txt"):
     # get sentence dump
     self.sent_filename = sent_filename
-    self.document_filenames = dict([item.strip().split(',') \
+    try:
+      self.document_filenames = dict([item.strip().split(',') \
       for item in open(self.sent_filename, 'r')])
-    # The size of the corpus
-    self.N = len(self.document_filenames)
-    print('sents filename: %s' % self.sent_filename)
-    print('total # of sents: %d' % self.N)
+      # The size of the corpus
+      self.N = len(self.document_filenames)
+      print('sents filename: %s' % self.sent_filename)
+      print('total # of sents: %d' % self.N)
+    except Exception as err:
+      print('Error vsm.__init__(%s)', self.sent_filename)
+      print(err)
+      sys.exit(-1)
 
     # dictionary: a set to contain all terms (i.e., words) in the document corpus.
     self.dictionary = set()
@@ -56,14 +61,11 @@ class vsm:
     # terms in the document.
     self.characters = " .,!#$%^&*();:\n\t\\\"?!{}[]<>"
 
-  """
-  def main():
-    initialize_terms_and_postings()
-    initialize_document_frequencies()
-    initialize_lengths()
-    while True:
-      do_search()
-  """
+    self.initialize_terms_and_postings()
+    self.initialize_document_frequencies()
+    self.initialize_lengths()
+
+    print('Init VSM for %s done' % self.sent_filename)
 
 
   def initialize_terms_and_postings(self):
@@ -140,14 +142,26 @@ class vsm:
         [set(self.postings[term].keys()) for term in query])
     if not relevant_document_ids:
       print "No documents matched all query terms."
+      return None
     else:
       scores = sorted([(id,self.similarity(query,id))
         for id in relevant_document_ids],
         key=lambda x: x[1],
         reverse=True)
-      print "Score: filename"
+      result_dic = {'result': True}
+      retrieved_item = {}
+      item_count = 0
+      print "Score: sentense, id"
       for (id,score) in scores:
         print str(score)+": "+self.document_filenames[id]+", "+id
+        retrieved_item[item_count] = {}
+        retrieved_item[item_count]['url'] = id
+        retrieved_item[item_count]['sentense'] = self.document_filenames[id]
+        retrieved_item[item_count]['score'] = score
+        item_count+=1
+      result_dic['retrieved_item'] = retrieved_item
+
+    return result_dic
 
 
   def intersection(self, sets):
