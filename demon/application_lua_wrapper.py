@@ -16,7 +16,7 @@ util_root = '../utils'
 sys.path.insert(0, util_root)
 from exifutil import exifutil
 
-host_ip = '10.202.35.109'
+host_ip = '10.202.4.219'
 feature_demon_port = 8080
 port = 8081
 index_filename = 'index_11st.html'
@@ -61,6 +61,7 @@ def call_feature_demon(imageurl):
           np.trim_zeros((np.asarray(retrieved_items['score_gc']) * 100).astype(np.uint8))
         #print(result_dic['scores'].shape)
         result_dic['predicted_category_gc'] = result_dic['predicted_category_gc'][0:result_dic['scores_gc'].size]
+        result_dic['sentence'] = retrieved_items['sentence']
         
   except Exception as err:
     logging.info('call_feature_demon error: %s', err)
@@ -107,7 +108,9 @@ def lua_wrapper_request_handler_upload():
     imagefile.save(filename)
     logging.info('Saving to %s', filename)
     image = exifutils.open_oriented_im(filename)
-    imageurl = 'http://10.202.35.109:2596/PBrain/enroll/%s' % filename_
+    imageurl = 'http://%(host_ip)s:2596/PBrain/enroll/%(filename)s' % \
+      {'host_ip': host_ip, 'filename':filename_}
+    logging.info('imageurl %s', imageurl)
     result_dic = call_feature_demon(imageurl)
   except Exception as err:
     logging.info('Uploaded image open error: %s', err)
