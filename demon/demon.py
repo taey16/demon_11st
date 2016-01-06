@@ -1,7 +1,7 @@
 
 # coding: utf8
 
-import os, sys, time
+import os, sys
 import logging
 import flask
 import werkzeug

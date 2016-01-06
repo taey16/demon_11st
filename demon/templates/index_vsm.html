@@ -79,6 +79,7 @@
         {% for rank in result['retrieved_item'] %}
           <td>
             <img img class="image_show" src="{{result['retrieved_item'][rank]['url']}}" height="292" width="292">
+            <br><font size="1">{{result['retrieved_item'][rank]['sentense']}}, {{result['retrieved_item'][rank]['score']}}</font>
           </td>
           {% if loop.index is divisibleby 4 %} </tr><tr> {% endif %}
         {% endfor %}

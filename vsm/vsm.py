@@ -10,18 +10,20 @@ according to the vector space model."""
 
 from collections import defaultdict
 import math
-import sys
+import sys, time
 
 
 class vsm:
 
 
-  def __init__(self, sent_filename="./documents/COCO_sentense.txt"):
+  def __init__(self, sent_filename= \
+    "/storage/coco/COCO_trainval_sentense.inception7_lstm2_embedding384.txt"
+  ):
     # get sentence dump
     self.sent_filename = sent_filename
     try:
       self.document_filenames = dict([item.strip().split(',') \
-      for item in open(self.sent_filename, 'r')])
+        for item in open(self.sent_filename, 'r')])
       # The size of the corpus
       self.N = len(self.document_filenames)
       print('sents filename: %s' % self.sent_filename)
@@ -61,11 +63,13 @@ class vsm:
     # terms in the document.
     self.characters = " .,!#$%^&*();:\n\t\\\"?!{}[]<>"
 
+    time_loading_start = time.time()
     self.initialize_terms_and_postings()
     self.initialize_document_frequencies()
     self.initialize_lengths()
 
-    print('Init VSM for %s done' % self.sent_filename)
+    print('Init VSM for %s done in %.3f' % \
+      (self.sent_filename, time.time() - time_loading_start))
 
 
   def initialize_terms_and_postings(self):

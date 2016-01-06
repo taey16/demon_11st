@@ -26,7 +26,9 @@ feature_demon_port = 8080
 port = 8081
 html_filename = 'index_11st.html'
 html_filename_vsm = 'index_vsm.html'
-sentense_filename = '/works/VSM/documents/COCO_sentense.txt'
+sentense_filename = \
+  '/storage/coco/COCO_trainval_sentense.inception7_lstm2_embedding384.txt'
+  #'/works/VSM/documents/COCO_sentense.txt'
 url_prefix = 'http://%(host_ip)s:%(port)d/lua_wrapper_request_handler/?url=%%s' % \
   {'host_ip': host_ip, 'port': feature_demon_port}
 
@@ -124,6 +126,7 @@ UPLOAD_FOLDER = '/storage/enroll'
 @app.route('/lua_wrapper_request_handler_upload', methods=['POST'])
 @crossdomain(origin='*')
 def lua_wrapper_request_handler_upload():
+  #import pdb; pdb.set_trace()
   result_dic = {}
   try:
     imagefile = flask.request.files['imagefile']
