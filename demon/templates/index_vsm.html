@@ -74,6 +74,7 @@
 
       {% if has_result %}
       <h3>Search result</h3>
+      <font size=1>{{flag['number_of_retrieved_docs']}} results in {{flag['total_docs']}} documents ({{flag['elapsed']}} sec.)</font>
       <table class="d_table">
         <tr>
         {% for rank in result['retrieved_item'] %}

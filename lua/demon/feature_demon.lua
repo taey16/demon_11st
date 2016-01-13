@@ -48,7 +48,7 @@ app.get("/lua_wrapper_request_handler", function(req, res)
     for i=1,5 do
       print(class_name[i] .. ' ' .. table_scores[i])
     end
-    print(sentence)
+    io.flush(print(sentence))
   else
     --app.abort(400, 'request error', req, res)
     result = {

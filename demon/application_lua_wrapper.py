@@ -27,7 +27,8 @@ port = 8081
 html_filename = 'index_11st.html'
 html_filename_vsm = 'index_vsm.html'
 sentense_filename = \
-  '/storage/coco/COCO_trainval_sentense.inception7_lstm2_embedding384.txt'
+  '/storage/coco/COCO_trainval_test_sentenses.ResCept_epoch35_embedding2048_hidden384_layer2.txt'
+  #'/storage/coco/COCO_trainval_sentense.inception7_lstm2_embedding384.txt'
   #'/works/VSM/documents/COCO_sentense.txt'
 url_prefix = 'http://%(host_ip)s:%(port)d/lua_wrapper_request_handler/?url=%%s' % \
   {'host_ip': host_ip, 'port': feature_demon_port}
@@ -53,11 +54,18 @@ def vsm_request_handler():
   #import pdb; pdb.set_trace()
   query_string = flask.request.args.get('query_string', '')
   result_dic = {}
+  flag = {}
   try:
+    start_vsm = time.time()
     result_dic = vsm.do_search(query_string)
+    number_of_retrieved_docs = len(result_dic['retrieved_item'])
+    elapsed_vsm = time.time() - start_vsm
+    flag['total_docs'] = vsm.N
+    flag['number_of_retrieved_docs'] = number_of_retrieved_docs
+    flag['elapsed'] = elapsed_vsm
     if result_dic['result']:
       return flask.render_template(
-        html_filename_vsm, has_result=True, result=result_dic, flag=[0])
+        html_filename_vsm, has_result=True, result=result_dic, flag=flag)
   except Exception as err:
     logging.info(err)
     return flask.render_template(

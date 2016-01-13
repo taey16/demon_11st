@@ -4,7 +4,7 @@ require 'nngraph'
 require 'cutorch'
 require 'cunn'
 require 'cudnn'
-local cjson = require 'cjson'
+--local cjson = require 'cjson'
 require 'image'
 package.path = '/works/nt2/?.lua;'..package.path
 require 'misc.DataLoaderRaw'
@@ -12,7 +12,8 @@ require 'models.LanguageModel'
 local net_utils = require 'misc.net_utils'
 
 local model_filename = 
-  '/storage/coco/checkpoints/_inception7_bs16_encode256_layer2/model_id_inception7_bs16_encode256_layer2.t7'
+  '/storage/coco/checkpoints/_ReCept_bn_removed_epoch35_bs16_embedding2048_encode384_layer2_lr4e-4/model_id_ReCept_bn_removed_epoch35_bs16_embedding2048_encode384_layer2_lr4e-4.t7'
+  --'/storage/coco/checkpoints/_inception7_bs16_encode256_layer2/model_id_inception7_bs16_encode256_layer2.t7'
 print('===> Loading model: '..model_filename)
 local checkpoint = torch.load(model_filename)
 local batch_size = checkpoint.opt.batch_size
