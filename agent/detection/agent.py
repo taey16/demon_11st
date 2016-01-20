@@ -3,8 +3,10 @@
 
 import sys
 import os
-import numpy as np
 import cv2
+import PIL.Image
+import PIL.ImageDraw
+import numpy as np
 import _init_paths
 from conf import conf
 from fast_rcnn.config import cfg
@@ -14,6 +16,7 @@ import caffe
 
 
 class agent(object):
+
 
   def __init__(self):
     if cfg['USE_GPU']: 
@@ -79,44 +82,32 @@ class agent(object):
       class_names[cls_ind] = cls_name
       per_class_roi_index = np.where(roi_boxes_and_scores[cls_ind][:, -1] >= cfg.TEST.CONF_THRESH)[0]
       if len(per_class_roi_index) == 0:
-        roi_boxes_and_scores[cls_ind] = []
+        #roi_boxes_and_scores[cls_ind] = []
+        roi_boxes_and_scores.pop(cls_ind, None)
       else:
         roi_boxes_and_scores[cls_ind] = roi_boxes_and_scores[cls_ind][per_class_roi_index,:]
 
     return class_names, roi_boxes_and_scores
 
 
-  def vis_detections(self, im, class_name, roi_boxes_and_scores, fig_filename='example.png'):
-    import matplotlib.pyplot as plt
-    im = im[:, :, (2, 1, 0)]
-    fig, ax = plt.subplots(figsize=(12, 12))
-    for cls_index, cls_name in class_name[1:]:
-      cls_index += 1 
-      dets = roi_boxes_and_scores[cls_index]
-      #inds = np.where(dets[:, -1] >= cfg.TEST.CONF_THRESH)[0]
-      if len(inds) == 0: continue
+  def draw_rois(self, im, class_name, roi_boxes_and_scores):
+    # bgr2rgb
+    im_rgb = im[:, :, (2, 1, 0)]
+    im_pil = PIL.Image.fromarray(np.uint8(im_rgb)) 
+    im_draw= PIL.ImageDraw.Draw(im_pil)
+    for cls_index in roi_boxes_and_scores:
+      roi_info = roi_boxes_and_scores[cls_index]
+      #if len(roi_info) == 0: continue
+      # for each roi
+      for info in roi_info:
+        bbox = info[:4]
+        score= str(info[-1])
+        im_draw.rectangle([bbox[0], bbox[1], bbox[2], bbox[3]], outline=(0,0,0))
+        im_draw.rectangle([bbox[0]+2, bbox[1]+2, bbox[2]-2, bbox[3]-2], outline=(255,255,255))
+        im_draw.text([bbox[0], bbox[1]], score, fill=(0,0,255))
+        im_draw.text([bbox[0], bbox[1]+20], class_name[cls_index], fill=(0,0,255))
 
-      #ax.imshow(im, aspect='equal')
-      for i in inds:
-        bbox = dets[i, :4]
-        score= dets[i, -1]
-        ax.add_patch(
-          plt.Rectangle((bbox[0], bbox[1]),
-                         bbox[2] - bbox[0],
-                         bbox[3] - bbox[1], fill=False,
-                         edgecolor='red', linewidth=3.5)
-          )
-        ax.text(bbox[0], bbox[1] - 2,
-                '{:s} {:.3f}'.format(class_name, score),
-                bbox=dict(facecolor='blue', alpha=0.5),
-                fontsize=14, color='white')
-
-    ax.set_title(('{} detections with ' 'p({} | box) >= {:.1f}').format( \
-      class_name, class_name, thresh), fontsize=14)
-    plt.axis('off')
-    plt.tight_layout()
-    plt.savefig(fig_filename)
-    #plt.draw()
+    return im_pil
 
 
 import pdb; pdb.set_trace()
@@ -127,4 +118,5 @@ conf = conf(yaml_file, 1)
 agent = agent()
 agent.im_detect('/works/caffe_build_sys_py/examples/images/cat.jpg')
 class_names, roi_boxes_and_scores = agent.detect('/works/caffe_build_sys_py/examples/images/cat.jpg')
-agent.vis_detections(agent.img, class_names, roi_boxes_and_scores)
+roi_box_image = agent.draw_rois(agent.img, class_names, roi_boxes_and_scores)
+roi_box_image.save('rectangle.png')
