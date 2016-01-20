@@ -67,6 +67,12 @@ class agent(object):
     return scores, boxes
 
 
+  def extract_feature(self, blob_name):
+    #feature = np.reshape(np.squeeze(self.net.blobs[blob_name].data))
+    feature = np.squeeze(self.net.blobs[blob_name].data)
+    return feature
+
+
   def post_process(self, scores, boxes):
     roi_boxes_and_scores = {}
     class_names = {}
@@ -118,5 +124,6 @@ conf = conf(yaml_file, 1)
 agent = agent()
 agent.im_detect('/works/caffe_build_sys_py/examples/images/cat.jpg')
 class_names, roi_boxes_and_scores = agent.detect('/works/caffe_build_sys_py/examples/images/cat.jpg')
+feature = agent.extract_feature(blob_name='fc7')
 roi_box_image = agent.draw_rois(agent.img, class_names, roi_boxes_and_scores)
 roi_box_image.save('rectangle.png')
