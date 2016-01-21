@@ -49,10 +49,10 @@ class agent(object):
     scores, boxes = self.im_detect(image_path, proposal)
     if len(scores) == 0:
       print('ERROR in agent.detect (scores and boxes are all [])' )
-      return [], []
+      return [], [], []
 
-    class_names, roi_boxes_and_scores = self.post_process(scores, boxes)
-    return class_names, roi_boxes_and_scores
+    class_names, roi_boxes_and_scores, feature_vectors = self.post_process(scores, boxes)
+    return class_names, roi_boxes_and_scores, feature_vectors
 
 
   def im_detect(self, image_path, proposal=None):
@@ -73,10 +73,10 @@ class agent(object):
     return feature
 
 
-  def post_process(self, scores, boxes):
+  def post_process(self, scores, boxes, blob_name='fc7'):
     roi_boxes_and_scores = {}
     class_names = {}
-    roi_info = {}
+    feature_vector = {}
     for cls_ind, cls_name in enumerate(cfg.CLASSES[1:]):
       cls_ind += 1 # skip bg   
       cls_boxes = boxes[:, 4*cls_ind:4*(cls_ind + 1)]
@@ -85,15 +85,17 @@ class agent(object):
         np.hstack((cls_boxes, cls_scores[:, np.newaxis])).astype(np.float32)
       keep = nms(roi_boxes_and_scores[cls_ind], cfg.TEST.NMS_THRESH)
       roi_boxes_and_scores[cls_ind] = roi_boxes_and_scores[cls_ind][keep, :]
+      feature_vector[cls_ind] = self.net.blobs[blob_name].data[keep]
       class_names[cls_ind] = cls_name
       per_class_roi_index = np.where(roi_boxes_and_scores[cls_ind][:, -1] >= cfg.TEST.CONF_THRESH)[0]
       if len(per_class_roi_index) == 0:
-        #roi_boxes_and_scores[cls_ind] = []
         roi_boxes_and_scores.pop(cls_ind, None)
+        feature_vector.pop(cls_ind, None)
       else:
         roi_boxes_and_scores[cls_ind] = roi_boxes_and_scores[cls_ind][per_class_roi_index,:]
+        feature_vector[cls_ind] = feature_vector[cls_ind][per_class_roi_index,:]
 
-    return class_names, roi_boxes_and_scores
+    return class_names, roi_boxes_and_scores, feature_vector
 
 
   def draw_rois(self, im, class_name, roi_boxes_and_scores):
@@ -116,14 +118,14 @@ class agent(object):
     return im_pil
 
 
-import pdb; pdb.set_trace()
 #prototxt = '/storage/ImageNet/ILSVRC2012/model/vgg/faster_rcnn_end2end/prototxt/test.prototxt'
 #caffemodel = '/works/py_faster_rcnn/output/EXP_END2END_with_acc/voc_2007_trainval/vgg16_faster_rcnn_iter_70000.caffemodel'
 yaml_file = '/storage/ImageNet/ILSVRC2012/model/vgg/faster_rcnn_end2end/cfgs/faster_rcnn_end2end_test.yml'
 conf = conf(yaml_file, 1)
 agent = agent()
+import pdb; pdb.set_trace()
 agent.im_detect('/works/caffe_build_sys_py/examples/images/cat.jpg')
-class_names, roi_boxes_and_scores = agent.detect('/works/caffe_build_sys_py/examples/images/cat.jpg')
+class_names, roi_boxes_and_scores, feature_vectors = agent.detect('/works/caffe_build_sys_py/examples/images/cat.jpg')
 feature = agent.extract_feature(blob_name='fc7')
 roi_box_image = agent.draw_rois(agent.img, class_names, roi_boxes_and_scores)
 roi_box_image.save('rectangle.png')
