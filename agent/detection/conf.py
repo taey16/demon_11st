@@ -8,12 +8,7 @@ from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list
 class conf:
 
   def __init__(self, _yaml_file=None, _gpu_id=None):
-  #def __init__(self, _prototxt=None, _caffemodel=None, _yaml_file=None, _gpu_id=None):
-  #  assert(_prototxt)
-  #  assert(_caffemodel)
     assert(_yaml_file)
-    #self.prototxt = _prototxt
-    #self.caffemodel = _caffemodel
     self.yaml_file = _yaml_file
     self.mean_value = np.zeros((1, 1, 3)).astype(np.float32)
     self.mean_value[0,0,0] = 102.9801
@@ -30,14 +25,25 @@ class conf:
 
     cfg.USE_GPU= self.use_gpu
     cfg.GPU_ID = self.gpu_id
-    #cfg[cfg.PHASE].PROTOTXT = self.prototxt
-    #cfg[cfg.PHASE].CAFFE_MODEL = self.caffemodel
+    """
     cfg.CLASSES = ('__background__',
                    'aeroplane', 'bicycle', 'bird', 'boat',
                    'bottle', 'bus', 'car', 'cat', 'chair',
                    'cow', 'diningtable', 'dog', 'horse',
                    'motorbike', 'person', 'pottedplant',
                    'sheep', 'sofa', 'train', 'tvmonitor')
+    """
+    """
+    cfg.CLASSES = ('__background__', # always index 0
+                     'pant', 'leggings/stocking', 'hat/cap', 'shoe',
+                     'blouse', 'jumper', 'panty', 'knit', 'swimsuit',
+                     'shirt', 'coat', 'one-piece', 'tshirt', 'cardigan',
+                     'skirt', 'jacket')
+    """
+    cfg.CLASSES = ('__background__', # always index 0
+      'bag', 'bra', 'jacket_coat', 'onepiece', 
+      'pants', 'panty', 'shoes', 'skirt', 'swimwear', 
+      'tshirts_shirts_blouse_hoody', 'vest', 'knit_cardigan')
 
 
     """

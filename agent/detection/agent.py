@@ -6,6 +6,7 @@ import os
 import cv2
 import PIL.Image
 import PIL.ImageDraw
+import PIL.ImageFont
 import numpy as np
 import _init_paths
 from conf import conf
@@ -45,14 +46,22 @@ class agent(object):
     self.img = cv2.imread(image_path)
 
 
+  def flip_image(self):
+    self.img_flipped = self.img[:,::-1,:]
+
+
   def detect(self, image_path, proposal=None):
     scores, boxes = self.im_detect(image_path, proposal)
     if len(scores) == 0:
       print('ERROR in agent.detect (scores and boxes are all [])' )
       return [], [], []
 
+    roi_boxes_and_scores, feature_vectors = self.post_process(scores, boxes)
+    return roi_boxes_and_scores, feature_vectors
+    """
     class_names, roi_boxes_and_scores, feature_vectors = self.post_process(scores, boxes)
     return class_names, roi_boxes_and_scores, feature_vectors
+    """
 
 
   def im_detect(self, image_path, proposal=None):
@@ -75,6 +84,25 @@ class agent(object):
 
   def post_process(self, scores, boxes, blob_name='fc7'):
     roi_boxes_and_scores = {}
+    feature_vector = {}
+    for cls_ind, cls_name in enumerate(cfg.CLASSES[1:]):
+      cls_ind += 1 # skip bg   
+      cls_boxes = boxes[:, 4*cls_ind:4*(cls_ind + 1)]
+      cls_scores = scores[:, cls_ind]
+      roi_boxes_and_scores[cls_name] = \
+        np.hstack((cls_boxes, cls_scores[:, np.newaxis])).astype(np.float32)
+      keep = nms(roi_boxes_and_scores[cls_name], cfg.TEST.NMS_THRESH)
+      roi_boxes_and_scores[cls_name] = roi_boxes_and_scores[cls_name][keep, :]
+      feature_vector[cls_name] = self.net.blobs[blob_name].data[keep]
+      per_class_roi_index = np.where(roi_boxes_and_scores[cls_name][:, -1] >= cfg.TEST.CONF_THRESH)[0]
+      if len(per_class_roi_index) == 0:
+        roi_boxes_and_scores.pop(cls_name, None)
+        feature_vector.pop(cls_name, None)
+      else:
+        roi_boxes_and_scores[cls_name] = roi_boxes_and_scores[cls_name][per_class_roi_index,:]
+        feature_vector[cls_name] = feature_vector[cls_name][per_class_roi_index,:]
+    """ 
+    roi_boxes_and_scores = {}
     class_names = {}
     feature_vector = {}
     for cls_ind, cls_name in enumerate(cfg.CLASSES[1:]):
@@ -94,17 +122,20 @@ class agent(object):
       else:
         roi_boxes_and_scores[cls_ind] = roi_boxes_and_scores[cls_ind][per_class_roi_index,:]
         feature_vector[cls_ind] = feature_vector[cls_ind][per_class_roi_index,:]
-
     return class_names, roi_boxes_and_scores, feature_vector
+    """
+
+    return roi_boxes_and_scores, feature_vector
 
 
-  def draw_rois(self, im, class_name, roi_boxes_and_scores):
+  fnt = PIL.ImageFont.truetype('Pillow/Tests/fonts/FreeMono.ttf', 15)
+  def draw_rois(self, im, roi_boxes_and_scores):
     # bgr2rgb
     im_rgb = im[:, :, (2, 1, 0)]
     im_pil = PIL.Image.fromarray(np.uint8(im_rgb)) 
     im_draw= PIL.ImageDraw.Draw(im_pil)
-    for cls_index in roi_boxes_and_scores:
-      roi_info = roi_boxes_and_scores[cls_index]
+    for cls_name in roi_boxes_and_scores:
+      roi_info = roi_boxes_and_scores[cls_name]
       #if len(roi_info) == 0: continue
       # for each roi
       for info in roi_info:
@@ -112,15 +143,17 @@ class agent(object):
         score= str(info[-1])
         im_draw.rectangle([bbox[0], bbox[1], bbox[2], bbox[3]], outline=(0,0,0))
         im_draw.rectangle([bbox[0]+2, bbox[1]+2, bbox[2]-2, bbox[3]-2], outline=(255,255,255))
-        im_draw.text([bbox[0], bbox[1]], score, fill=(0,0,255))
-        im_draw.text([bbox[0], bbox[1]+20], class_name[cls_index], fill=(0,0,255))
+        im_draw.text([bbox[0], bbox[1]], score, font=self.fnt, fill=(0,0,255))
+        im_draw.text([bbox[0], bbox[1]+20], cls_name, font=self.fnt, fill=(0,0,255))
 
     return im_pil
 
 
+"""
 #prototxt = '/storage/ImageNet/ILSVRC2012/model/vgg/faster_rcnn_end2end/prototxt/test.prototxt'
 #caffemodel = '/works/py_faster_rcnn/output/EXP_END2END_with_acc/voc_2007_trainval/vgg16_faster_rcnn_iter_70000.caffemodel'
-yaml_file = '/storage/ImageNet/ILSVRC2012/model/vgg/faster_rcnn_end2end/cfgs/faster_rcnn_end2end_test.yml'
+#yaml_file = '/storage/ImageNet/ILSVRC2012/model/vgg/faster_rcnn_end2end/cfgs/faster_rcnn_end2end_test.yml'
+yaml_file = '/storage/product/detection/11st_All/cfg/faster_rcnn_end2end_test.yml'
 conf = conf(yaml_file, 1)
 agent = agent()
 import pdb; pdb.set_trace()
@@ -129,3 +162,4 @@ class_names, roi_boxes_and_scores, feature_vectors = agent.detect('/works/caffe_
 feature = agent.extract_feature(blob_name='fc7')
 roi_box_image = agent.draw_rois(agent.img, class_names, roi_boxes_and_scores)
 roi_box_image.save('rectangle.png')
+"""

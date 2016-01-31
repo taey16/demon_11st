@@ -85,15 +85,14 @@ class korean_url_handler:
     return string_buffer, data, req_ext
 
 
-  def download_image(self, image_url):
+  def download_image(self, image_url, file_path='tmp'):
     try:
       string_buffer, img_rawdata, img_ext = \
         self.getstringbuffer(image_url.encode('utf-8'))
       filename = str(datetime.datetime.now()).replace(' ', '_')
-      filename = os.path.join('/tmp/deep_feature', '{}{}'.format(filename, img_ext))
-      img_fp = open(filename, 'wb')
-      img_fp.write(img_rawdata)
-      img_fp.close()
+      filename = os.path.join(file_path, '{}{}'.format(filename, img_ext))
+      with open(filename, 'wb') as img_fp:
+        img_fp.write(img_rawdata)
     except Exception as err:
       logging.info('URL Image download error: %s', err)
       return None
