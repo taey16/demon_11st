@@ -51,9 +51,17 @@ def encode_flask_template(_html_filename, _has_result, _result_dic, _flag='succe
   return flask.render_template(\
     _html_filename, has_result=_has_result,result=_result_dic, flag=_flag
   )
-  
+
 
 UPLOAD_FOLDER = '/storage/enroll'
+wget_cmd = 'wget %s -O %s'
+def download_input(url):
+  #filename = app.korean_url_handler.download_image(imageurl, UPLOAD_FOLDER)
+  filename = app.korean_url_handler.get_downloaded_filename(UPLOAD_FOLDER, 'jpg')
+  os.system(wget_cmd % (url, '%s' % filename))
+  return filename
+  
+
 @app.route('/detector_request_handler', methods=['GET'])
 @crossdomain(origin='*')
 def detector_request_handler():
@@ -63,7 +71,7 @@ def detector_request_handler():
   #import pdb; pdb.set_trace()
   try:
     fe_starttime = time.time()
-    filename = app.korean_url_handler.download_image(imageurl, UPLOAD_FOLDER)
+    filename = download_input(imageurl)
     result_dic, roi_box_image = call_feature_demon(filename)
     bbox_image_url = filename.replace('/storage/', 'http://10.202.4.219:2596/PBrain/')
     roi_box_image.save('%s' % filename)

@@ -23,7 +23,12 @@ url_prefix_img = 'http://i.011st.com%s'
 entries = [entry.strip().split(';') for entry in open(filename, 'r')]
 entries = entries[1:]
 
-#import pdb; pdb.set_trace()
+html_filename = '/storage/product/11st_julia/skirt.html'
+fp = open(html_filename, 'w')
+fp.write('<html>\n  <head>\n    <body>\n      <table>\n        <tr>\n')
+
+import pdb; pdb.set_trace()
+td_count = 0
 for entry in entries:
   imageurl = url_prefix_img % entry[3]
   url = url_prefix_req % imageurl
@@ -35,6 +40,10 @@ for entry in entries:
       retrieved_items = json.loads(response.read())
       if retrieved_items['result']:
         retrieved_items = decode_json(retrieved_items)
+        if td_count <> 0 and td_count % 4 == 0:
+          fp.write('        </tr>\n        <tr>\n')
+        fp.write('          <td><img src=\"%s\" width=396 height=396></td>\n' % retrieved_items['bbox_image_url'])
+        td_count += 1
       else: raise Exception
     else:
       print 'No response to url:', url
