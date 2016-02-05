@@ -141,8 +141,8 @@ class agent(object):
       for info in roi_info:
         bbox = info[:4]
         score= str(info[-1])
-        im_draw.rectangle([bbox[0], bbox[1], bbox[2], bbox[3]], outline=(0,0,0))
-        im_draw.rectangle([bbox[0]+2, bbox[1]+2, bbox[2]-2, bbox[3]-2], outline=(255,255,255))
+        im_draw.rectangle([bbox[0],  bbox[1],  bbox[2],  bbox[3]],  outline=(0,0,0))
+        im_draw.rectangle([bbox[0]+2,bbox[1]+2,bbox[2]-2,bbox[3]-2],outline=(255,255,255))
         im_draw.text([bbox[0], bbox[1]], score, font=self.fnt, fill=(0,0,255))
         im_draw.text([bbox[0], bbox[1]+20], cls_name, font=self.fnt, fill=(0,0,255))
 

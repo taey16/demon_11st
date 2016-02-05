@@ -87,7 +87,7 @@ class korean_url_handler:
 
   def get_downloaded_filename(self, file_path, img_ext):
     filename = str(datetime.datetime.now()).replace(' ', '_')
-    filename = os.path.join(file_path, '{}.{}'.format(filename, img_ext))
+    filename = os.path.join(file_path, '{}{}'.format(filename, img_ext))
     return filename
 
 
@@ -95,7 +95,7 @@ class korean_url_handler:
     try:
       string_buffer, img_rawdata, img_ext = \
         self.getstringbuffer(image_url.encode('utf-8'))
-      filename = get_downloaded_filename(file_path, img_ext)
+      filename = self.get_downloaded_filename(file_path, img_ext)
       with open(filename, 'wb') as img_fp:
         img_fp.write(img_rawdata)
     except Exception as err:

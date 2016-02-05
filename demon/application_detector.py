@@ -80,13 +80,13 @@ def detector_request_handler():
     logging.info('detector_request_handler error: %s', err)
     if is_browser <> '1': return {'result': False}
     else:
-      return decode_flask_template(\
+      return encode_flask_template(\
         html_filename, False, result_dic, 'fail')
 
   if is_browser <> '1':
     return encode_json(result_dic)
   else:
-    return decode_falsk_template(\
+    return encode_flask_template(\
       html_filename, True, result_dic, 'success')
 
 
