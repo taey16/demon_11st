@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="11st browser API">
+    <meta name="author" content="http://www.skplanet.com">
+    <title>Alfred</title>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+      $(document).ready(
+        function() {
+          $('#imagefile').change(
+            function() {
+              if ($(this).val()) {
+                $('#formupload').submit();
+              }
+            }
+          );
+        }
+      );
+    </script>
+
+    <style>
+      body {
+        font-family: "Gill Sans", Helvetica, Arial, sans-serif;
+        line-height:1.5em;
+        color: #232323;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1, h2, h3 {
+        font-family: Gill Sans, serif;
+        line-height:1.5em;
+        border-bottom: 1px solid #ccc;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Begin page content -->
+    <div class="container">
+      <center>
+      <form role="form" action="detector_request_handler" method="get">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" name="url" id="url" placeholder="Provide an image URL">
+            <input type="hidden" class="form-control" name="is_browser" id="is_browser" value="1">
+            <span class="input-group-btn">
+              <input class="btn btn-primary" value="Send" type="submit" id="detector_request_handler"></input>
+            </span>
+          </div><!-- /input-group -->
+        </div>
+      </form>
+      <form id="formupload" class="form-inline" role="form" action="detector_request_handler_upload" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="imagefile">Upload an image:</label>
+          <input type="file" name="imagefile" id="imagefile">
+        </div>
+      </form>
+      </center>
+
+      {% if has_result %}
+      <center>
+        <img img class="image_show" src="{{result['bbox_image_url']}}" height="292" width="292">
+        <h3>Detection result:</h3>
+        <center><img class="image_show" src="{{result['bbox_image_url']}}"></center>
+      {% else %}
+        <h3>Welcome</h3>
+      {% endif %}
+    </center>
+
+    <hr>
+    <div id="footer">
+      <div class="container">
+        <p>&copy; Machine Intelligence Lab., SK Planet</p>
+      </div>
+    </div>
+  </body>
+</html>
