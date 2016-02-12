@@ -4,7 +4,7 @@ local app  = require('../waffle') {
 }
 local async= require 'async'
 require 'image'
-package.path = '../?.lua;' .. package.path
+package.path = '/works/demon_11st/lua/?.lua;' .. package.path
 local agent = require 'agent.agent_attribute'
 local downloader = require 'utils.demon_utils'
 

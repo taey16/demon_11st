@@ -11,7 +11,8 @@ require 'models.LanguageModel'
 local net_utils = require 'misc.net_utils'
 
 local agent_filename = 
-  '/storage/attribute/checkpoints/tshirts_shirts/_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4.t7'
+  '/storage/attribute/checkpoints/tshirts_shirts_blous/_inception-v3-2015-12-05_bn_removed_epoch16_bs16_encode256_layer2_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch16_bs16_encode256_layer2_lr4e-4.t7'
+  --'/storage/attribute/checkpoints/tshirts_shirts/_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4.t7'
   --'/storage/attribute/checkpoints/_inception-v3-2015-12-05_bn_removed_epoch10_mean_std_modified_bs16_embedding2048_encode256_layer2_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch10_mean_std_modified_bs16_embedding2048_encode256_layer2_lr4e-4.t7'
 print('===> Loading agent: '..agent_filename)
 local checkpoint = torch.load(agent_filename)
@@ -26,9 +27,7 @@ local opt = {
   'image_size', 
   'crop_size'
 }
-for k,v in pairs(opt) do 
-  opt[v] = checkpoint.opt[v]
-end
+for k,v in pairs(opt) do opt[v] = checkpoint.opt[v] end
 local vocab = checkpoint.vocab
 local beam_size = 1 
 local sample_opts = { 
@@ -67,5 +66,8 @@ end
 
 
 print '===> Loading agent_attribute success'
+io.flush(print(string.format(
+  '===> model file: %s', agent_filename
+)))
 return agent
 
