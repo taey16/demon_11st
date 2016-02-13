@@ -2,7 +2,7 @@
 local app  = require('../waffle') {
   autocache = true
 }
-local async= require 'async'
+local async = require 'async'
 require 'image'
 package.path = '/works/demon_11st/lua/?.lua;' .. package.path
 local agent = require 'agent.agent_attribute'
@@ -19,6 +19,19 @@ function call_feature_demon(input_data)
 end
 
 
+function encode_table(_query_url, _sentence, _flag_result)
+  assert(_query_url, 
+    string.format('ERROR check query_url: %s', _query_url)
+  )
+  local result = {
+    url = _query_url,
+    sentence = _sentence,
+    result = _flag_result,
+  }
+  return result
+end
+
+
 app.get("/attribute_request_handler", function(req, res)
   local query_url = req.url.args.url or nil
   local result = {}
@@ -28,16 +41,9 @@ app.get("/attribute_request_handler", function(req, res)
     print('Start caption:')
     local sentence = call_feature_demon(img)
     print(sentence)
-    result = {
-      url = query_url,
-      sentence = sentence,
-      result = true
-    }
+    result = encode_table(query_url, sentence, true)
   else
-    result = {
-      url = query_url,
-      result = false
-    } 
+    result = encode_table(query_url, '', false)
   end
   res.json(result)
   os.execute('rm -f '..filename)

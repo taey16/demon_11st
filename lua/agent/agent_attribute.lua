@@ -5,13 +5,14 @@ require 'cutorch'
 require 'cunn'
 require 'cudnn'
 require 'image'
-package.path = '/works/nt2/?.lua;'..package.path
+package.path = '/works/vision_language/?.lua;'..package.path
 require 'misc.DataLoaderRaw'
 require 'models.LanguageModel'
+require 'models.FeatExpander'
 local net_utils = require 'misc.net_utils'
 
 local agent_filename = 
-  '/storage/attribute/checkpoints/tshirts_shirts_blous/_inception-v3-2015-12-05_bn_removed_epoch16_bs16_encode256_layer2_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch16_bs16_encode256_layer2_lr4e-4.t7'
+  '/storage/attribute/checkpoints/tshirts_shirts_blous_87844_6000/_inception-v3-2015-12-05_bn_removed_epoch31_bs16_encode256_layer2_lr4.000000e-04/model_id_inception-v3-2015-12-05_bn_removed_epoch31_bs16_encode256_layer2_lr4.000000e-04.t7'
   --'/storage/attribute/checkpoints/tshirts_shirts/_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4.t7'
   --'/storage/attribute/checkpoints/_inception-v3-2015-12-05_bn_removed_epoch10_mean_std_modified_bs16_embedding2048_encode256_layer2_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch10_mean_std_modified_bs16_embedding2048_encode256_layer2_lr4e-4.t7'
 print('===> Loading agent: '..agent_filename)
