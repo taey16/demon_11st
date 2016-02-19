@@ -70,7 +70,9 @@
         <center><img class="image_show" src="{{result['bbox_image_url']}}"></center>
         -->
         <h3>Tag:</h3>
-        <center>{{result['sentence']}}</center>
+        {% for sent in result['sentence'] %}
+          <center>{{sent}}</center>
+        {% endfor %}
       {% else %}
         <h3>Welcome</h3>
       {% endif %}

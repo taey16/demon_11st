@@ -68,7 +68,7 @@ def detector_request_handler():
   imageurl = flask.request.args.get('url', '')
   is_browser = flask.request.args.get('is_browser', '')
   result_dic = {}
-  #import pdb; pdb.set_trace()
+  import pdb; pdb.set_trace()
   try:
     fe_starttime = time.time()
     filename = download_input(imageurl)

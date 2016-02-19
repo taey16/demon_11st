@@ -12,7 +12,7 @@ import cStringIO as StringIO
 import urllib
 import json
 
-PJT_PATH = '/home/taey16/'
+PJT_PATH = '/works'
 PJT_NAME = 'demon_11st'
 UTIL_ROOT = '{}/{}/utils'.format(PJT_PATH, PJT_NAME)
 FEAT_ROOT = '{}/{}/agent'.format(PJT_PATH, PJT_NAME)

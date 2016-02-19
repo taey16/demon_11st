@@ -14,6 +14,7 @@ import numpy as np
 from PIL import Image
 
 html_filename = 'index_11st_attribute.html'
+html_filename_vsm = 'index_vsm.html'
 port = 8081
 feature_demon_host_ip = '10.202.4.219'
 feature_demon_port= 8080 
@@ -27,7 +28,7 @@ app = flask.Flask(__name__)
 
 def call_attribute_demon(imageurl):
   result_dic = {}
-  #import pdb; pdb.set_trace()
+  import pdb; pdb.set_trace()
   try:
     fe_starttime = time.time()
     url = feature_demon_request_prefix % imageurl
@@ -60,7 +61,6 @@ def call_detector_demon(local_filename):
     return {'result': False}, None
 
   return result_dic, roi_box_image
-
 
 
 def encode_json(result_dic):
@@ -97,13 +97,38 @@ def download_post_req(imagefile):
   return filename, local_url
 
 
+@app.route('/vsm_request_handler', methods=['GET'])
+@crossdomain(origin='*')
+def vsm_request_handler():
+  #import pdb; pdb.set_trace()
+  query_string = flask.request.args.get('query_string', '')
+  print(query_string)
+  result_dic = {}
+  flag = {}
+  try:
+    start_vsm = time.time()
+    result_dic = app.vsm.do_search(query_string, 400)
+    number_of_retrieved_docs = len(result_dic['retrieved_item'])
+    elapsed_vsm = time.time() - start_vsm
+    flag['total_docs'] = app.vsm.N
+    flag['number_of_retrieved_docs'] = number_of_retrieved_docs
+    flag['elapsed'] = elapsed_vsm
+    if result_dic['result']:
+      return flask.render_template(
+        html_filename_vsm, has_result=True, result=result_dic, flag=flag)
+  except Exception as err:
+    logging.info(err)
+    return flask.render_template(
+      html_filename_vsm, has_result=False, result=result_dic, flag=[0])
+
+
 @app.route('/attribute_request_handler', methods=['GET'])
 @crossdomain(origin='*')
 def attribute_request_handler():
   imageurl = flask.request.args.get('url', '')
   is_browser = flask.request.args.get('is_browser', '')
   result_dic = {}
-  #import pdb; pdb.set_trace()
+  import pdb; pdb.set_trace()
   try:
     fe_starttime = time.time()
     filename, local_url = download_get_req(imageurl)
@@ -146,6 +171,7 @@ def attribute_request_handler_upload():
 @crossdomain(origin='*')
 def index():
   return flask.render_template(
+    #html_filename_vsm, has_result=False, result=[], flag='')
     html_filename, has_result=False, result=[], flag='')
 
 
@@ -158,6 +184,12 @@ class application(web_server):
 
     from korean_url_handler import korean_url_handler
     app.korean_url_handler = korean_url_handler()
+
+    vsm_root = '/works/demon_11st/vsm'
+    sys.path.insert(0, vsm_root)
+    from vsm import vsm
+    #import pdb; pdb.set_trace()
+    app.vsm = vsm( '/storage/attribute/11st_julia_tshirts_shirtstes_blous_sentences.model_id_inception-v3-2015-12-05_bn_removed_epoch31_bs16_encode256_layer2_lr4.000000e-04.t7.txt')
 
     """
     agent_root = '/works/demon_11st/agent/detection'

@@ -87,7 +87,7 @@ class korean_url_handler:
 
   def get_downloaded_filename(self, file_path, img_ext):
     filename = str(datetime.datetime.now()).replace(' ', '_')
-    filename = os.path.join(file_path, '{}{}'.format(filename, img_ext))
+    filename = os.path.join(file_path, '{}.{}'.format(filename, img_ext))
     return filename
 
 

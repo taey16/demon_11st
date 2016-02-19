@@ -40,7 +40,9 @@ app.get("/attribute_request_handler", function(req, res)
     local img = image.load(filename)
     print('Start caption:')
     local sentence = call_feature_demon(img)
-    print(sentence)
+    for i,sent in pairs(sentence) do
+      print(sent)
+    end
     result = encode_table(query_url, sentence, true)
   else
     result = encode_table(query_url, '', false)

@@ -1,7 +1,7 @@
 
-local downloader = {}
+local demon_utils = {}
 
-function downloader.download_image(query_url)
+function demon_utils.download_image(query_url)
   local filename = paths.concat(
     '/tmp/' .. tostring(torch.uniform())..'.jpg'
   )
@@ -11,5 +11,19 @@ function downloader.download_image(query_url)
   return filename
 end
 
-return downloader
+function demon_utils.load_list(filename)
+  assert(filename)
+  local file = io.open(filename)
+  local data_list = {}
+  while true do
+    local line = file:read()
+    if not line then break end
+    local url = string.gsub(line, "\n", "")
+    table.insert(data_list, url)
+  end
+  file:close()
+  return data_list
+end
+
+return demon_utils
 

@@ -15,6 +15,7 @@ import sys, time
 
 class vsm:
 
+  epsilon = 1e-6
 
   def __init__(self, sent_filename= \
     "/storage/coco/COCO_trainval_sentense.inception7_lstm2_embedding384.txt"
@@ -22,12 +23,7 @@ class vsm:
     # get sentence dump
     self.sent_filename = sent_filename
     try:
-      self.document_filenames = dict([item.strip().split(',') \
-        for item in open(self.sent_filename, 'r')])
-      # The size of the corpus
-      self.N = len(self.document_filenames)
-      print('sents filename: %s' % self.sent_filename)
-      print('total # of sents: %d' % self.N)
+      self.parse_input(sent_filename)
     except Exception as err:
       print('Error vsm.__init__(%s)', self.sent_filename)
       print(err)
@@ -72,19 +68,33 @@ class vsm:
       (self.sent_filename, time.time() - time_loading_start))
 
 
+  def parse_input(self, sent_filename):
+    #self.document_filenames = dict([item.strip().split(',') \
+    #  for item in open(self.sent_filename, 'r')])
+    self.document_filenames = {}
+    for item in open(self.sent_filename, 'r'):
+      item = item.strip().split(',')
+      self.document_filenames[item[0]] = unicode(item[1].decode('utf-8'))
+
+    # The size of the corpus
+    self.N = len(self.document_filenames)
+    print('sents filename: %s' % self.sent_filename)
+    print('total # of sents: %d' % self.N)
+
+
   def initialize_terms_and_postings(self):
     """Reads in each document in document_filenames, splits it into a
     list of terms (i.e., tokenizes it), adds new terms to the global
     dictionary, and adds the document to the posting list for each
     term, with value equal to the frequency of the term in the
     document."""
-    for id,sent in self.document_filenames.iteritems():
+    for doc_id,sent in self.document_filenames.iteritems():
       terms = self.tokenize(sent)
       unique_terms = set(terms)
       self.dictionary = self.dictionary.union(unique_terms)
       for term in unique_terms:
         # the value is the frequency of the term in the document
-        self.postings[term][id] = terms.count(term)
+        self.postings[term][doc_id] = terms.count(term)
 
 
   def tokenize(self, document):
@@ -105,18 +115,18 @@ class vsm:
 
   def initialize_lengths(self):
     """Computes the length for each document."""
-    for id in self.document_filenames:
+    for doc_id in self.document_filenames:
       l = 0
       for term in self.dictionary:
-        l += self.imp(term,id)**2
-      self.length[id] = math.sqrt(l)
+        l += self.imp(term,doc_id)**2
+      self.length[doc_id] = math.sqrt(l)
 
 
-  def imp(self, term,id):
+  def imp(self, term,doc_id):
     """Returns the importance of term in document id.  If the term
     isn't in the document, then return 0."""
-    if id in self.postings[term]:
-      return self.postings[term][id]*self.inverse_document_frequency(term)
+    if doc_id in self.postings[term]:
+      return self.postings[term][doc_id]*self.inverse_document_frequency(term)
     else:
       return 0.0
 
@@ -130,7 +140,7 @@ class vsm:
       return 0.0
 
 
-  def do_search(self, query_string=None):
+  def do_search(self, query_string=None, limit=400):
     """Asks the user what they would like to search for, and returns a
     list of relevant documents, in decreasing order of cosine
     similarity."""
@@ -139,7 +149,8 @@ class vsm:
     else:
       query = self.tokenize(query_string.strip())
     if query == []:
-      sys.exit()
+      raise Exception
+
     # find document ids containing all query terms.  Works by
     # intersecting the posting lists for all query terms.
     relevant_document_ids = self.intersection(
@@ -148,21 +159,22 @@ class vsm:
       print "No documents matched all query terms."
       return None
     else:
-      scores = sorted([(id,self.similarity(query,id))
-        for id in relevant_document_ids],
+      scores = sorted([(doc_id,self.similarity(query,doc_id))
+        for doc_id in relevant_document_ids],
         key=lambda x: x[1],
         reverse=True)
       result_dic = {'result': True}
       retrieved_item = {}
       item_count = 0
       print "Score: sentense, id"
-      for (id,score) in scores:
-        print str(score)+": "+self.document_filenames[id]+", "+id
+      for (doc_id,score) in scores:
+        print str(score)+": "+self.document_filenames[doc_id]+", "+doc_id
         retrieved_item[item_count] = {}
-        retrieved_item[item_count]['url'] = id
-        retrieved_item[item_count]['sentense'] = self.document_filenames[id]
+        retrieved_item[item_count]['url'] = doc_id
+        retrieved_item[item_count]['sentense'] = self.document_filenames[doc_id]
         retrieved_item[item_count]['score'] = score
         item_count+=1
+        if item_count >= limit: break
       result_dic['retrieved_item'] = retrieved_item
 
     return result_dic
@@ -175,7 +187,7 @@ class vsm:
     return reduce(set.intersection, [s for s in sets])
 
 
-  def similarity(self, query, id):
+  def similarity(self, query, doc_id):
     """Returns the cosine similarity between query and document id.
     Note that we don't bother dividing by the length of the query
     vector, since this doesn't make any difference to the ordering of
@@ -183,8 +195,8 @@ class vsm:
     similarity = 0.0
     for term in query:
       if term in self.dictionary:
-        similarity += self.inverse_document_frequency(term)*self.imp(term,id)
-    similarity = similarity / self.length[id]
+        similarity += self.inverse_document_frequency(term)*self.imp(term,doc_id)
+    similarity = similarity / (self.length[doc_id] + self.epsilon)
     return similarity
 
 """
