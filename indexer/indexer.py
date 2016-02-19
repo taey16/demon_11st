@@ -2,6 +2,9 @@
 import numpy as np
 import cPickle as pickle
 import logging
+import sys
+c_hamming_distance_module = '/works/demon_11st/index/hamming_distance'
+sys.path.append(c_hamming_distance_module)
 
 class indexer:
   # generate N bit lookup table
