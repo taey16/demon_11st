@@ -4,6 +4,8 @@ import numpy as np
 cimport numpy as np 
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
+# Cython: https://github.com/cython/cython/wiki/tutorials-NumpyPointerToC
+
 cdef extern unsigned int _popcnt(unsigned long long x);
 
 cdef extern unsigned int c_hamming_distance(
