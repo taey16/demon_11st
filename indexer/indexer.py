@@ -5,6 +5,7 @@ import logging
 import sys
 c_hamming_distance_module = '/works/demon_11st/index/hamming_distance'
 sys.path.append(c_hamming_distance_module)
+import hamming_distance
 
 class indexer:
   # generate N bit lookup table

@@ -2,8 +2,10 @@
 import cython
 import numpy as np
 cimport numpy as np 
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
-#cdef extern unsigned int __popcnt(unsigned long long x)
+cdef extern unsigned int _popcnt(unsigned long long x);
+
 cdef extern unsigned int c_hamming_distance(
   unsigned long long* query,
   unsigned long long* ref,
@@ -15,6 +17,12 @@ cdef extern unsigned int c_hamming_distance_ref(
   unsigned int* distance,
   unsigned int dimension,
   unsigned int num_ref);
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def popcnt(x not None):
+  return _popcnt(x);
 
 
 @cython.boundscheck(False)
