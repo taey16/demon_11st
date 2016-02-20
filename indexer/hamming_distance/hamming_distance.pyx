@@ -29,8 +29,8 @@ def popcnt(x not None):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def hamming_distance( \
-  np.ndarray[unsigned long long, ndim=2, mode="c"] query not None, \
+def hamming_distance(
+  np.ndarray[unsigned long long, ndim=2, mode="c"] query not None,
   np.ndarray[unsigned long long, ndim=2, mode="c"] ref not None):
 
   cdef dim = query.shape[1]
@@ -41,9 +41,9 @@ def hamming_distance( \
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def hamming_distance_ref( \
-  np.ndarray[unsigned long long, ndim=2, mode="c"] query not None, \
-  np.ndarray[unsigned long long, ndim=2, mode="c"] ref not None, \
+def hamming_distance_ref(
+  np.ndarray[unsigned long long, ndim=2, mode="c"] query not None,
+  np.ndarray[unsigned long long, ndim=2, mode="c"] ref not None,
   np.ndarray[unsigned int, ndim=1, mode="c"] distance not None):
 
   cdef dim = query.shape[1]
