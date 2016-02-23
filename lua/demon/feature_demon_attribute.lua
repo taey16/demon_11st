@@ -26,7 +26,7 @@ function encode_table(_query_url, _sentence, _flag_result)
   local result = {
     url = _query_url,
     sentence = _sentence,
-    result = _flag_result,
+    result_sentence = _flag_result,
   }
   return result
 end

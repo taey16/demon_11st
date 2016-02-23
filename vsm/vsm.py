@@ -163,7 +163,7 @@ class vsm:
         for doc_id in relevant_document_ids],
         key=lambda x: x[1],
         reverse=True)
-      result_dic = {'result': True}
+      result = {'result_retrieval': True}
       retrieved_item = {}
       item_count = 0
       print "Score: sentense, id"
@@ -175,9 +175,9 @@ class vsm:
         retrieved_item[item_count]['score'] = score
         item_count+=1
         if item_count >= limit: break
-      result_dic['retrieved_item'] = retrieved_item
+      result['retrieved_item'] = retrieved_item
 
-    return result_dic
+    return result
 
 
   def intersection(self, sets):

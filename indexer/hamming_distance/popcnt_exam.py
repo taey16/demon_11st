@@ -24,17 +24,16 @@ distance = hamming_distance.hamming_distance(query, ref)
 elapsed = time.time() - start
 print('%d in %.6f' % (distance, elapsed))
 
-
 print('Test for hamming_distance.hamming_distance_ref')
 num_ref = 1000000
 ref = np.ones((num_ref,dimension), dtype=np.uint64)
 dist= np.zeros((num_ref), dtype=np.uint32)
-start = time.time()
 #import pdb; pdb.set_trace()
 ref[num_ref-1,dimension-1] = 0
 ref[num_ref-1,dimension-2] = 0
 ref[num_ref-1,dimension-3] = 0
 ref[num_ref-2,dimension-3] = 0
+start = time.time()
 hamming_distance.hamming_distance_ref(query, ref, dist)
 elapsed = time.time() - start
 print('distance of last two element: %d, %d in elapsed: %f ' % (dist[num_ref-1], dist[num_ref-2], elapsed))
@@ -43,4 +42,19 @@ print('distance of last two element: %d, %d in elapsed: %f ' % (dist[num_ref-1],
 #print('elapsed: %f ' % (elapsed))
 
 
+"""
+print('Test for hamming_distance.hamming_distance_full')
+num_query = 200
+num_ref = 10000
+query= np.zeros((num_query, dimension), dtype=np.uint64)
+ref = np.ones((num_ref,dimension), dtype=np.uint64)
+dist = np.zeros((num_query, num_ref), dtype=np.uint32)
+start = time.time()
+#print(query.flags['C_CONTIGUOUS'])
+#print(dist.flags['C_CONTIGUOUS'])
+#print(ref.flags['C_CONTIGUOUS'])
+hamming_distance.hamming_distance_full(query, ref, dist)
+elapsed = time.time() - start
+print('in %.6f' % elapsed)
+"""
 

@@ -16,7 +16,7 @@ from fast_rcnn.nms_wrapper import nms
 import caffe
 
 
-class agent(object):
+class agent_detector(object):
 
 
   def __init__(self):
@@ -52,16 +52,19 @@ class agent(object):
 
   def detect(self, image_path, proposal=None):
     scores, boxes = self.im_detect(image_path, proposal)
+    result = {}
     if len(scores) == 0:
       print('ERROR in agent.detect (scores and boxes are all [])' )
-      return [], [], []
+      result['result_roi'] = True
+      result['roi'] = []
+      return result
 
     roi_boxes_and_scores, feature_vectors = self.post_process(scores, boxes)
-    return roi_boxes_and_scores, feature_vectors
-    """
-    class_names, roi_boxes_and_scores, feature_vectors = self.post_process(scores, boxes)
-    return class_names, roi_boxes_and_scores, feature_vectors
-    """
+    result['result_roi'] = True
+    result['roi'] = roi_boxes_and_scores
+
+    #return roi_boxes_and_scores, feature_vectors
+    return result
 
 
   def im_detect(self, image_path, proposal=None):
