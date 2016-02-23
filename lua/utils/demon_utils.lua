@@ -3,7 +3,8 @@ local demon_utils = {}
 
 function demon_utils.download_image(query_url)
   local filename = paths.concat(
-    '/tmp/' .. tostring(torch.uniform())..'.jpg'
+    --'/tmp/' .. tostring(torch.uniform())..'.jpg'
+    '/storage/enroll/' .. tostring(torch.uniform())..'.jpg'
   )
   local wget_cmd = 'wget '..query_url..' -O '..filename.. ' -q'
   os.execute(wget_cmd)

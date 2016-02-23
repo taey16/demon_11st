@@ -65,7 +65,7 @@ end
 
 function agent.preprocess(input)
   local img = 
-    net_utils.preprocess_inception7_predict(input, opt.crop_size, false, true)
+    net_utils.preprocess_for_predict(input, opt.crop_size, false, true)
   local data= 
     torch.CudaTensor(1, 3, opt.crop_size, opt.crop_size):fill(0)
   data[{{1},{},{},{}}] = img

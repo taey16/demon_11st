@@ -14,8 +14,9 @@ function download_get_req(imageurl)
 end
 
 
-function call_feature_demon(input_data)
-  return agent.predict(input_data)
+function call_feature_demon(image_filename)
+  --return agent.predict(input_data)
+  return agent.get_attribute(image_filename)
 end
 
 
@@ -37,9 +38,9 @@ app.get("/attribute_request_handler", function(req, res)
   local result = {}
   if query_url then
     local filename = download_get_req(query_url)
-    local img = image.load(filename)
+    --local img = image.load(filename)
     print('Start caption:')
-    local sentence = call_feature_demon(img)
+    local sentence = call_feature_demon(filename)
     for i,sent in pairs(sentence) do
       print(sent)
     end
@@ -54,7 +55,8 @@ end)
 
 app.error(404, function(description, req, res)
   local url = string.format('%s%s', req.headers.host, req.url.path)
-  res.status(404).send('No page found at ' .. url)
+  res.status(404).send('No page found at ' .. url .. 
+    'does not support browser_request')
 end)
 
 
