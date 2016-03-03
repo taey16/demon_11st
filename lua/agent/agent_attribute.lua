@@ -4,19 +4,20 @@ require 'nngraph'
 require 'cutorch'
 require 'cunn'
 require 'cudnn'
+cudnn.fastest = true
+cudnn.benchmark = true
+cudnn.verbose = true
 require 'image'
-local gm = require 'graphicsmagick'
 package.path = '/works/vision_language/?.lua;'..package.path
 require 'misc.DataLoaderRaw'
 require 'models.LanguageModel'
 require 'models.FeatExpander'
 local net_utils = require 'misc.net_utils'
+local demon_utils = require '../utils/demon_utils'
 
-cudnn.fastest = true
-cudnn.benchmakr = true
-cudnn.verbose = true
 local agent_filename = 
-  '/storage/attribute/checkpoints/tshirts_shirts_blous_knit_103607_8000/_inception-v3-2015-12-05_bn_removed_epoch33_bs16_encode256_layer2_dropout5e-1_lr4.000000e-04/model_id_inception-v3-2015-12-05_bn_removed_epoch33_bs16_encode256_layer2_dropout5e-1_lr4.000000e-04.t7'
+  '/storage/attribute/checkpoints/tshirts_shirts_blous_knit_103607_8000/_inception-v3-2015-12-05_bn_removed_epoch33_bs16_lstm_tanh_hidden256_layer2_dropout0.5_lr4.000000e-04_anneal_100000/model_id_inception-v3-2015-12-05_bn_removed_epoch33_bs16_lstm_tanh_hidden256_layer2_dropout0.5_lr4.000000e-04_anneal_100000.t7'
+  --'/storage/attribute/checkpoints/tshirts_shirts_blous_knit_103607_8000/_inception-v3-2015-12-05_bn_removed_epoch33_bs16_encode256_layer2_dropout5e-1_lr4.000000e-04/model_id_inception-v3-2015-12-05_bn_removed_epoch33_bs16_encode256_layer2_dropout5e-1_lr4.000000e-04.t7'
   --'/storage/attribute/checkpoints/tshirts_shirts_blous_87844_6000/_inception-v3-2015-12-05_bn_removed_epoch31_bs16_encode256_layer2_lr4.000000e-04/model_id_inception-v3-2015-12-05_bn_removed_epoch31_bs16_encode256_layer2_lr4.000000e-04.t7'
   --'/storage/attribute/checkpoints/tshirts_shirts/_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4.t7'
   --'/storage/attribute/checkpoints/_inception-v3-2015-12-05_bn_removed_epoch10_mean_std_modified_bs16_embedding2048_encode256_layer2_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch10_mean_std_modified_bs16_embedding2048_encode256_layer2_lr4e-4.t7'
@@ -35,8 +36,10 @@ local opt = {
 }
 for k,v in pairs(opt) do opt[v] = checkpoint.opt[v] end
 local vocab = checkpoint.vocab
-local beam_size = 2
+local beam_size = 10
 local sample_opts = { 
+  -- do sampleing from argmzx (1)
+  -- or multinomial sampling (0)
   sample_max = opt.sample_max, 
   beam_size = beam_size, 
   temperature = opt.temperature 
@@ -51,21 +54,9 @@ agent.lm:evaluate()
 collectgarbage()
 
 
-function agent.load_image(image_filename)
-  local info = gm.info(image_filename)
-  local img
-  --print(info.format)
-  if info.format == 'JPEG' or info.format == 'PNG' then
-    img = gm.load(image_filename)
-    --local img = image.load(image_filename)
-  end
-  return img
-end
-
-
 function agent.preprocess(input)
-  local img = 
-    net_utils.preprocess_for_predict(input, opt.crop_size, false, true)
+  local img = image.scale(input, opt.image_size, opt.image_size)
+  img = net_utils.preprocess_for_predict(img, opt.crop_size)
   local data= 
     torch.CudaTensor(1, 3, opt.crop_size, opt.crop_size):fill(0)
   data[{{1},{},{},{}}] = img
@@ -73,9 +64,8 @@ function agent.preprocess(input)
 end
 
 
-function agent.predict(input)
-  local input = image.scale(input, opt.image_size, opt.image_size)
-  input = agent.preprocess(input)
+function agent.predict(input_tensor)
+  local input = agent.preprocess(input_tensor)
   local feats = agent.cnn:forward(input)
   if feats:dim() == 1 then
     feats = feats:resize(1, (#feats)[1])
@@ -87,7 +77,7 @@ end
 
 
 function agent.get_attribute(image_filename)
-  local img = agent.load_image(image_filename)
+  local img = demon_utils.load_image(image_filename)
   local sentences
   if img then
     sentences = agent.predict(img)

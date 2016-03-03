@@ -3,8 +3,9 @@ require 'torch'
 require 'image'
 require 'nn'
 
+local image_utils = {}
 
-function local_contrast_norm( rgb, kernel_size )
+function image_utils.local_contrast_norm( rgb, kernel_size )
   local rgb = rgb:double()
   local kernel_size = kernel_size or 7
   local normalization = 
@@ -24,7 +25,7 @@ end
 
 
 -- used in vgg16Caffe
-function preprocess(im)
+function image_utils.preprocess(im)
   local input = image.scale(im,256,256,'bilinear')*255
   if input:dim() == 2 then
     input = input:view(1,input:size(1), input:size(2)):repeatTensor(3,1,1)
@@ -50,7 +51,7 @@ function preprocess(im)
 end
 
 
-function save_images(x, n, file, padding, nrow, symmetric)
+function image_utils.save_images(x, n, file, padding, nrow, symmetric)
   local padding = padding or 2
   local nrow = nrow or 8
   local symmetric = symmetric or true
@@ -63,7 +64,7 @@ function save_images(x, n, file, padding, nrow, symmetric)
 end
 
 
-function augment_image(input, loadSize, sampleSize)
+function image_utils.augment_image(input, loadSize, sampleSize)
   local oH = sampleSize[2]
   local oW = sampleSize[3]
   local iH = loadSize[2]
@@ -86,7 +87,7 @@ function augment_image(input, loadSize, sampleSize)
 end
 
 
-function resize_crop(input, loadSize, preserve_aspect_ratio)
+function image_utils.resize_crop(input, loadSize, preserve_aspect_ratio)
   local output = torch.FloatTensor()
   local preserve_aspect_ratio = 
     preserve_aspect_ratio or torch.uniform()
@@ -107,7 +108,7 @@ function resize_crop(input, loadSize, preserve_aspect_ratio)
 end
 
 
-function loadImage(path, loadSize)
+function image_utils.loadImage(path, loadSize)
   local loadSize = loadSize or nil
   local input = image.load(path)
   if input:dim() == 2 then
@@ -130,7 +131,25 @@ function loadImage(path, loadSize)
 end
 
 
-function loadImage(path, loadSize, aspect_ratio)
+--local load_image_inception-v3 = function(path, _input_dim, _input_sub, _input_scale)
+local load_image_inception_v3 = function(path)
+  --local input_dim = _input_dim or 299
+  --local input_sub = _input_sub or 128
+  --local input_scale = _input_scale or 0.0078125
+  local img   = image.load(path, 3)
+  local w, h  = img:size(3), img:size(2)
+  local min   = math.min(w, h)
+  img         = image.crop(img, 'c', min, min)
+  img         = image.scale(img, 299)
+  -- normalize image
+  img:mul(255):add(-128):mul(0.0078125)
+  -- due to batch normalization we must use minibatches
+  return img:float():view(1, img:size(1), img:size(2), img:size(3))
+end
+image_utils.load_image_inception_v3 = load_image_inception_v3
+
+
+function image_utils.loadImage(path, loadSize, aspect_ratio)
   local loadSize = loadSize or nil
   local input = image.load(path)
   if input:dim() == 2 then
@@ -150,7 +169,7 @@ function loadImage(path, loadSize, aspect_ratio)
 end
 
 
-function random_RST(img_data, output_resolution)
+function image_utils.random_RST(img_data, output_resolution)
   local resolution = img_data:size(2)
   local nChannels = img_data:size(1)
   local rotationFactor = 4
@@ -179,7 +198,7 @@ function random_RST(img_data, output_resolution)
 end
 
 
-function random_flip(input, do_flip)
+function image_utils.random_flip(input, do_flip)
   local do_flip = do_flip or torch.uniform()
   if do_flip > 0.5 then
     input = image.hflip(input)
@@ -188,7 +207,7 @@ function random_flip(input, do_flip)
 end
 
 
-function random_jitter(input, sampleSize)
+function image_utils.random_jitter(input, sampleSize)
   local iW = input:size(3)
   local iH = input:size(2)
   local oW = sampleSize[3]
@@ -204,7 +223,7 @@ function random_jitter(input, sampleSize)
   return output
 end
 
-function mean_std_norm(input, mean, std)
+function image_utils.mean_std_norm(input, mean, std)
   for i=1,3 do
     if mean then input[{{i},{},{}}]:add(-mean[i]) end
     if  std then input[{{i},{},{}}]:div(std[i]) end
@@ -213,7 +232,7 @@ function mean_std_norm(input, mean, std)
 end
 
 
-function center_crop(input, sampleSize)
+function image_utils.center_crop(input, sampleSize)
   local oH = sampleSize[2]
   local oW = sampleSize[3]
   local iW = input:size(3)
@@ -223,5 +242,7 @@ function center_crop(input, sampleSize)
   local output = image.crop(input, w1, h1, w1+oW, h1+oW)
   return output
 end
+
+return image_utils
 
 
