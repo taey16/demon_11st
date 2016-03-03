@@ -20,8 +20,7 @@ uint32_t c_hamming_distance(
 {
   uint32_t dist = 0;
   uint32_t d = 0;
-  for(d = 0; d < dimension; d++)
-  {
+  for(d = 0; d < dimension; d++) {
     dist += _distance(query[d], ref[d]);
   }
   return dist;
@@ -43,5 +42,27 @@ void c_hamming_distance_ref(
     }
   }
   //return dist;
+  return;
+}
+
+void c_hamming_distance_full(
+  uint64_t* query,
+  uint64_t* ref,
+  uint64_t* dist,
+  uint32_t dimension,
+  uint32_t num_query,
+  uint32_t num_ref)
+{
+  uint32_t d = 0;
+  uint32_t n_ref = 0;
+  uint32_t n_query = 0;
+  for(n_query = 0; n_query < num_query; n_query++) {
+    for(n_ref = 0; n_ref < num_ref; n_ref++) {
+      for(d = 0; d < dimension; d++) {
+        dist[n_query*num_ref+n_ref] += 
+          _distance(query[n_query*dimension+d], ref[n_ref*dimension+d]);
+      }
+    }
+  }
   return;
 }
