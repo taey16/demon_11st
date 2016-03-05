@@ -16,13 +16,12 @@ def add_path(path):
 
 
 # Add caffe to PYTHONPATH
-#caffe_path = osp.join(this_dir, '..', 'caffe-fast-rcnn', 'python')
-caffe_path = osp.join('/works/caffe_build_sys_py/python')
+caffe_path = osp.join('/works/caffe', 'python')
 add_path(caffe_path)
 print('caffe_path: %s' % caffe_path)
 
 # Add lib to PYTHONPATH
-lib_path = osp.join('/works/py_faster_rcnn_/lib')
+lib_path = osp.join('/works/py_faster_rcnn_/', 'lib')
 add_path(lib_path)
 print('faster_rcnn_path: %s' % lib_path)
 
