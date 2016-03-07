@@ -131,7 +131,10 @@ class agent_detector(object):
     return roi_boxes_and_scores, feature_vector
 
 
-  fnt = PIL.ImageFont.truetype('Pillow/Tests/fonts/FreeMono.ttf', 15)
+  # 10.202.4.219 black
+  #fnt = PIL.ImageFont.truetype('Pillow/Tests/fonts/FreeMono.ttf', 15)
+  # 10.202.34.211 jang-ph
+  fnt = PIL.ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeMono.ttf', 15)
   def draw_rois(self, im, roi_boxes_and_scores):
     # bgr2rgb
     im_rgb = im[:, :, (2, 1, 0)]
