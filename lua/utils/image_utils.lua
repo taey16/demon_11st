@@ -82,7 +82,6 @@ function image_utils.augment_image(input, loadSize, sampleSize)
   output[{8 ,{},{},{}}] = image.hflip(output[{3,{},{},{}}])
   output[{9 ,{},{},{}}] = image.hflip(output[{4,{},{},{}}])
   output[{10,{},{},{}}] = image.hflip(output[{5,{},{},{}}])
-  -- save_images(output, 10)
   return output
 end
 

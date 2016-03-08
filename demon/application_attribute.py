@@ -1,16 +1,15 @@
 
 # -*- coding: UTF-8 -*-
 
+import os
+import sys
 import flask
-import werkzeug
 from web_server import web_server
 from flask_decorator import crossdomain
 import json
 import logging
-import time, datetime
-import os,sys
-import numpy as np
-from PIL import Image
+import time
+#from PIL import Image
 
 html_filename = 'index_11st_attribute.html'
 html_filename_vsm = 'index_vsm.html'
@@ -26,6 +25,7 @@ def init_result_dic():
   result_dic['result_retrieval'] = False
   result_dic['result_feature'] = False
   result_dic['result_signature'] = False
+  result_dic['result_category'] = False
   result_dic['url'] = None
   result_dic['roi'] = None
   result_dic['roi_box_image'] = None
@@ -33,6 +33,8 @@ def init_result_dic():
   result_dic['retrieved_item'] = None
   result_dic['feature'] = None
   result_dic['signature'] = None
+  result_dic['category_scores'] = None
+  result_dic['category_name'] = None
   return result_dic
 
 
@@ -44,11 +46,11 @@ def set_result_dic(result_dic, result):
   return result_dic
 
 
-def call_attribute(agent, imageurl):
+def call_attribute(agent, imageurl, local_path):
   #import pdb; pdb.set_trace()
   try:
     fe_starttime = time.time()
-    response = agent.get_attribute(imageurl)
+    response = agent.get_attribute(imageurl, local_path)
     logging.info('caption done, %.4f', time.time() - fe_starttime)
     if response <> None:
       result = json.loads(response)
@@ -93,29 +95,6 @@ def encode_flask_template(_html_filename, _has_result, _result_dic, _flag='succe
   )
 
 
-UPLOAD_FOLDER = '/storage/enroll'
-#wget_cmd = 'wget %s -O %s'
-def download_get_req(url):
-  #filename = app.korean_url_handler.get_downloaded_filename(UPLOAD_FOLDER, 'jpg')
-  filename = app.korean_url_handler.download_image(url, UPLOAD_FOLDER)
-  assert(os.path.exists(filename))
-  local_url = filename.replace('/storage/', 'http://10.202.4.219:2596/PBrain/')
-  #os.system(wget_cmd % (url, '%s' % filename))
-  return filename, local_url
-
-
-def download_post_req(imagefile):
-  filename_ = str(datetime.datetime.now()).replace(' ', '_') + \
-    werkzeug.secure_filename(imagefile.filename)
-  filename = os.path.join(UPLOAD_FOLDER, filename_)
-  imagefile.save(filename)
-  image = app.exifutils.open_oriented_im(filename)
-  image = Image.fromarray(np.uint8(image*255))
-  image.save(filename)
-  local_url = filename.replace('/storage/', 'http://10.202.4.219:2596/PBrain/')
-  return filename, local_url
-
-
 @app.route('/vsm_request_handler', methods=['GET'])
 @crossdomain(origin='*')
 def vsm_request_handler():
@@ -155,10 +134,10 @@ def detector_request_handler():
   #import pdb; pdb.set_trace()
   try:
     fe_starttime = time.time()
-    filename, local_url = download_get_req(imageurl)
+    filename, local_url = app.demon_utils.download_get_req(imageurl)
     result = call_detector(app.agent_detector, filename)
     roi_box_image = result['roi_box_image']
-    result['bbox_image_url'] = filename.replace('/storage/', 'http://10.202.4.219:2596/PBrain/')
+    result['bbox_image_url'] = filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/')
     roi_box_image.save('%s' % filename)
     app.result_dic = set_result_dic(app.result_dic, result)
   except Exception as err:
@@ -185,7 +164,7 @@ def attribute_request_handler():
   #import pdb; pdb.set_trace()
   try:
     fe_starttime = time.time()
-    filename, local_url = download_get_req(imageurl)
+    filename, local_url = app.demon_utils.download_get_req(imageurl)
     result = call_attribute(app.agent_attribute, local_url)
     app.result_dic = set_result_dic(app.result_dic, result)
   except Exception as err:
@@ -209,7 +188,7 @@ def attribute_request_handler_upload():
   app.result_dic = init_result_dic()
   try:
     imagefile = flask.request.files['imagefile']
-    filename, local_url = download_post_req(imagefile)
+    filename, local_url = app.download_post_req(imagefile)
     logging.info('imageurl %s', local_url)
     result = call_attribute(app.agent_attribute, local_url)
     result_dic['result_sentence'] = True
@@ -222,33 +201,73 @@ def attribute_request_handler_upload():
   return encode_flask_template( \
     html_filename, True, app.result_dic, 'success')
 
-@app.route('/request_handler', methods=['GET'])
+
+@app.route('/request_handler_upload', methods=['POST'])
 @crossdomain(origin='*')
-def request_handler():
-  imageurl = flask.request.args.get('url', '')
-  is_browser = flask.request.args.get('is_browser', '')
-  app.result_dic = init_result_dic()
+def request_handler_upload():
   #import pdb; pdb.set_trace()
+  app.result_dic = init_result_dic()
   try:
-    filename, local_url = download_get_req(imageurl)
-    result = call_attribute(app.agent_attribute, local_url)
+    imagefile = flask.request.files['imagefiles']
+    filename, local_url = app.download_post_req(imagefile)
+    logging.info('local_path %s', filename)
+    result = call_attribute(app.agent_attribute, None, filename)
     app.result_dic = set_result_dic(app.result_dic, result)
     result = call_detector(app.agent_detector, filename)
     roi_box_image = result['roi_box_image']
     result['roi_box_image'] = \
-      filename.replace('/storage/', 'http://10.202.4.219:2596/PBrain/') + '.det.jpg'
+      filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/') + '.det.jpg'
+    roi_box_image.save('%s' % filename + '.det.jpg')
+    app.result_dic = set_result_dic(app.result_dic, result)
+    app.result_dic['url'] = local_url
+  except Exception as err:
+    logging.info('Uploaded image open error: %s', err)
+    return encode_flask_template( \
+      html_filename, False, app.result_dic, 'fail')
+
+  return encode_flask_template( \
+    html_filename, True, app.result_dic, 'success')
+
+
+@app.route('/request_handler', methods=['GET'])
+@crossdomain(origin='*')
+def request_handler():
+  imageurl = flask.request.args.get('url', None)
+  local_path = flask.request.args.get('local_path', None)
+  is_browser = flask.request.args.get('is_browser', '')
+  app.result_dic = init_result_dic()
+  import pdb; pdb.set_trace()
+  try:
+    if imageurl <> None:
+      app.result_dic = set_result_dic(app.result_dic, {'url': imageurl})
+      filename, local_url = app.demon_utils.download_get_req(imageurl)
+    else: 
+      if os.path.exists(local_path):
+        local_url = None
+        filename = local_path
+      else: return encode_json({'url': local_path, 'result': False})
+    result = call_attribute(app.agent_attribute, local_url, filename)
+    app.result_dic = set_result_dic(app.result_dic, result)
+    result = call_detector(app.agent_detector, filename)
+    roi_box_image = result['roi_box_image']
+    result['roi_box_image'] = \
+      filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/') + '.det.jpg'
     roi_box_image.save('%s' % filename + '.det.jpg')
     app.result_dic = set_result_dic(app.result_dic, result)
   except Exception as err:
     logging.info('request_handler error: %s', err)
-    if is_browser <> '1': return {'result': False}
+    if is_browser <> '1': return encode_json({'result': False, 'url': imageurl})
     else:
       return encode_flask_template(\
         html_filename, False, app.result_dic, 'fail')
   
   if is_browser <> '1':
+    for key in app.result_dic['roi'].keys():
+      app.result_dic['roi'][key] = app.result_dic['roi'][key].tolist()
     return encode_json(app.result_dic)
   else:
+    if local_url == None:
+      app.result_dic['url'] = filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/')
     return encode_flask_template(\
       html_filename, True, app.result_dic, 'success')
 
@@ -263,12 +282,11 @@ def index():
 
 class application(web_server):
   def __init__(self, port):
+
     util_root = '/works/demon_11st/utils'
     sys.path.insert(0, util_root)
-    from exifutil import exifutil
-    app.exifutils = exifutil()
-    from korean_url_handler import korean_url_handler
-    app.korean_url_handler = korean_url_handler()
+    from demon_utils import demon_utils
+    app.demon_utils = demon_utils('/storage/enroll')
 
     vsm_root = '/works/demon_11st/vsm'
     sys.path.insert(0, vsm_root)
@@ -292,13 +310,13 @@ class application(web_server):
     agent_attribute_root = '/works/demon_11st/agent/attribute' 
     sys.path.insert(0, agent_attribute_root)
     from agent_attribute import agent_attribute 
-    agent_attribute_cmd = \
-      'CUDA_VISIBLE_DEVICES=0 nohup luajit lua/demon/feature_demon_attribute.lua > logs &'
-    #app.agent_attribute = agent_attribute(agent_attribute_cmd)
-    app.agent_attribute = agent_attribute()
+    attribute_demon_host_ip = '10.202.34.211'
+    attribute_demon_port= 8080
+    app.agent_attribute = agent_attribute( \
+      attribute_demon_host_ip, attribute_demon_port)
 
     app.result_dic = init_result_dic()
-    # start web server
+
     web_server.__init__(self, app, port)
 
 

@@ -1,9 +1,9 @@
 
-local app  = require('../waffle') {
+local app  = require('waffle') {
   autocache = true
 }
 local async = require 'async'
-require 'image'
+--require 'image'
 package.path = '/works/demon_11st/lua/?.lua;' .. package.path
 local agent = require 'agent.agent_attribute'
 local downloader = require 'utils.demon_utils'
@@ -74,7 +74,7 @@ end)
 
 
 local options = {}
-options.host = '10.202.4.219'
+options.host = '10.202.34.211'
 options.port = '8080'
 app.listen(options)
 

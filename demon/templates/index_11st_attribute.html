@@ -53,7 +53,7 @@
             {% endif %}
             <input type="hidden" class="form-control" name="is_browser" id="is_browser" value="1">
             <span class="input-group-btn">
-              <input class="btn btn-primary" value="Send" type="submit" id="request_handler"></input>
+              <input class="btn btn-primary" value="Image Search" type="submit" id="request_handler"></input>
             </span>
           </div><!-- /input-group -->
         </div>
@@ -68,14 +68,14 @@
         <div class="form-group">
           <div class="input-group">
             {% if has_result and result['result_sentence'] %}
-              <input type="text" class="form-control" name="query_string" id="query_string" value="{{result['sentence'][0]}}">
+              <input type="text" class="form-control" name="query_string" id="query_string" value="{{result['sentence'][0]}}" disabled>
               <input type="hidden" class="form-control" name="url" id="url" value="{{result['url']}}">
             {% else %}
-              <input type="text" class="form-control" name="query_string" id="query_string" placeholder="Keyward search">
+              <input type="text" class="form-control" name="query_string" id="query_string" placeholder="Keyward search" disabled>
             {% endif %}
             <input type="hidden" class="form-control" name="is_browser" id="is_browser" value="1">
             <span class="input-group-btn">
-              <input class="btn btn-primary" value="Query" type="submit" id="vsm_request_handler"></input>
+              <input class="btn btn-primary" value="Keyward Search" type="submit" id="vsm_request_handler" disabled></input>
             </span>
           </div>
         </div>
@@ -86,6 +86,12 @@
       {% if has_result %}
       <center>
         <img img class="image_show" src="{{result['url']}}" height="292" width="292">
+        {% if result['result_category'] %}
+          <h3>Category:</h3>
+          {% for category_name in result['category_name'] %}
+            {{category_name}}({{result['category_scores'][loop.index-1]}}) &nbsp
+          {% endfor %}
+        {% endif %}
         {% if result['result_sentence'] %}
           <h3>Tag:</h3>
           {% for sent in result['sentence'] %}
