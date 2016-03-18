@@ -68,14 +68,14 @@
         <div class="form-group">
           <div class="input-group">
             {% if has_result and result['result_sentence'] %}
-              <input type="text" class="form-control" name="query_string" id="query_string" value="{{result['sentence'][0]}}" disabled>
+              <input type="text" class="form-control" name="query_string" id="query_string" value="{{result['sentence'][0]}}">
               <input type="hidden" class="form-control" name="url" id="url" value="{{result['url']}}">
             {% else %}
-              <input type="text" class="form-control" name="query_string" id="query_string" placeholder="Keyward search" disabled>
+              <input type="text" class="form-control" name="query_string" id="query_string" placeholder="Keyward search">
             {% endif %}
             <input type="hidden" class="form-control" name="is_browser" id="is_browser" value="1">
             <span class="input-group-btn">
-              <input class="btn btn-primary" value="Keyward Search" type="submit" id="vsm_request_handler" disabled></input>
+              <input class="btn btn-primary" value="Keyward Search" type="submit" id="vsm_request_handler"></input>
             </span>
           </div>
         </div>
@@ -95,7 +95,11 @@
         {% if result['result_sentence'] %}
           <h3>Tag:</h3>
           {% for sent in result['sentence'] %}
-            <center>{{sent}}</center>
+            {{sent}}&nbsp
+          {% endfor %}
+          </br>
+          {% for word_score in result['sentence_scores'] %}
+            {{word_score}},&nbsp
           {% endfor %}
         {% endif %}
         {% if result['result_roi'] %}

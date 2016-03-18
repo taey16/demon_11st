@@ -30,6 +30,7 @@ def init_result_dic():
   result_dic['roi'] = None
   result_dic['roi_box_image'] = None
   result_dic['sentence'] = None
+  result_dic['sentence_scores'] = None
   result_dic['retrieved_item'] = None
   result_dic['feature'] = None
   result_dic['signature'] = None
@@ -98,7 +99,7 @@ def encode_flask_template(_html_filename, _has_result, _result_dic, _flag='succe
 @app.route('/vsm_request_handler', methods=['GET'])
 @crossdomain(origin='*')
 def vsm_request_handler():
-  #import pdb; pdb.set_trace()
+  import pdb; pdb.set_trace()
   query_string = flask.request.args.get('query_string', '')
   is_browser = flask.request.args.get('is_browser', '')
   imageurl = flask.request.args.get('url', '')
@@ -110,6 +111,7 @@ def vsm_request_handler():
     if imageurl <> '': result['url'] = imageurl
     result['result_sentence'] = True
     result['sentence'] = [query_string]
+    result['sentence_scores'] = [-1]
     app.result_dic = set_result_dic(app.result_dic, result)
     number_of_retrieved_docs = len(app.result_dic['retrieved_item'])
     elapsed_vsm = time.time() - start_vsm
