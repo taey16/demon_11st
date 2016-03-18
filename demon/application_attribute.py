@@ -12,7 +12,6 @@ import time
 #from PIL import Image
 
 html_filename = 'index_11st_attribute.html'
-html_filename_vsm = 'index_vsm.html'
 port = 8081
 
 # global the flask app object
@@ -127,83 +126,6 @@ def vsm_request_handler():
     html_filename, True, app.result_dic, flag)
 
 
-@app.route('/detector_request_handler', methods=['GET'])
-@crossdomain(origin='*')
-def detector_request_handler():
-  imageurl = flask.request.args.get('url', '')
-  is_browser = flask.request.args.get('is_browser', '')
-  app.result_dic = init_result_dic()
-  #import pdb; pdb.set_trace()
-  try:
-    fe_starttime = time.time()
-    filename, local_url = app.demon_utils.download_get_req(imageurl)
-    result = call_detector(app.agent_detector, filename)
-    roi_box_image = result['roi_box_image']
-    result['bbox_image_url'] = filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/')
-    roi_box_image.save('%s' % filename)
-    app.result_dic = set_result_dic(app.result_dic, result)
-  except Exception as err:
-    logging.info('detector_request_handler error: %s', err)
-    if is_browser <> '1': return {'result': False}
-    else:
-      return encode_flask_template(\
-        html_filename, False, app.result_dic, 'fail')
-
-  if is_browser <> '1':
-    return encode_json(result_dic)
-  else:
-    return encode_flask_template(\
-      html_filename, True, app.result_dic, 'success')
-
-
-
-@app.route('/attribute_request_handler', methods=['GET'])
-@crossdomain(origin='*')
-def attribute_request_handler():
-  imageurl = flask.request.args.get('url', '')
-  is_browser = flask.request.args.get('is_browser', '')
-  app.result_dic = init_result_dic()
-  #import pdb; pdb.set_trace()
-  try:
-    fe_starttime = time.time()
-    filename, local_url = app.demon_utils.download_get_req(imageurl)
-    result = call_attribute(app.agent_attribute, local_url)
-    app.result_dic = set_result_dic(app.result_dic, result)
-  except Exception as err:
-    logging.info('attribute_request_handler error: %s', err)
-    if is_browser <> '1': return {'result': False}
-    else:
-      return encode_flask_template(\
-        html_filename, False, app.result_dic, 'fail')
-
-  if is_browser <> '1':
-    return encode_json(app.result_dic)
-  else:
-    return encode_flask_template(\
-      html_filename, True, app.result_dic, 'success')
-
-
-@app.route('/attribute_request_handler_upload', methods=['POST'])
-@crossdomain(origin='*')
-def attribute_request_handler_upload():
-  #import pdb; pdb.set_trace()
-  app.result_dic = init_result_dic()
-  try:
-    imagefile = flask.request.files['imagefile']
-    filename, local_url = app.download_post_req(imagefile)
-    logging.info('imageurl %s', local_url)
-    result = call_attribute(app.agent_attribute, local_url)
-    result_dic['result_sentence'] = True
-    app.result_dic = set_result_dic(app.result_dic, result)
-  except Exception as err:
-    logging.info('Uploaded image open error: %s', err)
-    return encode_flask_template( \
-      html_filename, False, app.result_dic, 'fail')
-
-  return encode_flask_template( \
-    html_filename, True, app.result_dic, 'success')
-
-
 @app.route('/request_handler_upload', methods=['POST'])
 @crossdomain(origin='*')
 def request_handler_upload():
@@ -213,7 +135,7 @@ def request_handler_upload():
     imagefile = flask.request.files['imagefiles']
     filename, local_url = app.download_post_req(imagefile)
     logging.info('local_path %s', filename)
-    result = call_attribute(app.agent_attribute, None, filename)
+    result = call_attribute(app.agent_attribute, local_url, filename)
     app.result_dic = set_result_dic(app.result_dic, result)
     result = call_detector(app.agent_detector, filename)
     roi_box_image = result['roi_box_image']
@@ -223,12 +145,21 @@ def request_handler_upload():
     app.result_dic = set_result_dic(app.result_dic, result)
     app.result_dic['url'] = local_url
   except Exception as err:
-    logging.info('Uploaded image open error: %s', err)
-    return encode_flask_template( \
-      html_filename, False, app.result_dic, 'fail')
-
-  return encode_flask_template( \
-    html_filename, True, app.result_dic, 'success')
+    logging.info('request_handler_upload error: %s', err)
+    if is_browser <> '1': return encode_json({'result': False, 'url': local_url})
+    else:
+      return encode_flask_template(\
+        html_filename, False, app.result_dic, 'fail')
+  
+  if is_browser <> '1':
+    for key in app.result_dic['roi'].keys():
+      app.result_dic['roi'][key] = app.result_dic['roi'][key].tolist()
+    return encode_json(app.result_dic)
+  else:
+    if local_url == None:
+      app.result_dic['url'] = filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/')
+    return encode_flask_template(\
+      html_filename, True, app.result_dic, 'success')
 
 
 @app.route('/request_handler', methods=['GET'])
@@ -278,7 +209,6 @@ def request_handler():
 @crossdomain(origin='*')
 def index():
   return flask.render_template(
-    #html_filename_vsm, has_result=False, result=[], flag='')
     html_filename, has_result=False, result=[], flag='')
 
 
