@@ -98,7 +98,7 @@ def encode_flask_template(_html_filename, _has_result, _result_dic, _flag='succe
 @app.route('/vsm_request_handler', methods=['GET'])
 @crossdomain(origin='*')
 def vsm_request_handler():
-  import pdb; pdb.set_trace()
+  #import pdb; pdb.set_trace()
   query_string = flask.request.args.get('query_string', '')
   is_browser = flask.request.args.get('is_browser', '')
   imageurl = flask.request.args.get('url', '')
@@ -130,10 +130,11 @@ def vsm_request_handler():
 @crossdomain(origin='*')
 def request_handler_upload():
   #import pdb; pdb.set_trace()
+  is_browser = flask.request.args.get('is_browser', '1')
   app.result_dic = init_result_dic()
   try:
-    imagefile = flask.request.files['imagefiles']
-    filename, local_url = app.download_post_req(imagefile)
+    imagefile = flask.request.files['imagefile']
+    filename, local_url = app.demon_utils.download_post_req(imagefile)
     logging.info('local_path %s', filename)
     result = call_attribute(app.agent_attribute, local_url, filename)
     app.result_dic = set_result_dic(app.result_dic, result)
