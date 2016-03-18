@@ -28,6 +28,7 @@ class agent(object):
       caffe.set_mode_gpu()
     else: caffe.set_mode_cpu()
 
+
     self.net = caffe.Classifier(
       model_def_file, pretrained_model_file,
       image_dims=(image_dim, image_dim), raw_scale=raw_scale,
