@@ -16,7 +16,9 @@ local net_utils = require 'misc.net_utils'
 local demon_utils = require '../utils/demon_utils'
 
 local agent_filename = 
-  '/storage/attribute/checkpoints/tshirts_shirts_blous_knit_103607_8000/_inception-v3-2015-12-05_bn_removed_epoch33_bs16_lstm_tanh_hidden256_layer2_dropout0.5_lr4.000000e-04_anneal_100000/model_id_inception-v3-2015-12-05_bn_removed_epoch33_bs16_lstm_tanh_hidden256_layer2_dropout0.5_lr4.000000e-04_anneal_100000.t7'
+  -- exp_attribute
+  '/storage/attribute/checkpoints/tshirts_shirts_blous_knit_103607_8000_seq_length-1/_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden256_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start0_every6475_finetune-1_cnnlr4.000000e-04_cnnwc1.000000e-05/model_id_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden256_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start0_every6475_finetune-1_cnnlr4.000000e-04_cnnwc1.000000e-05.t7'
+  --'/storage/attribute/checkpoints/tshirts_shirts_blous_knit_103607_8000/_inception-v3-2015-12-05_bn_removed_epoch33_bs16_lstm_tanh_hidden256_layer2_dropout0.5_lr4.000000e-04_anneal_100000/model_id_inception-v3-2015-12-05_bn_removed_epoch33_bs16_lstm_tanh_hidden256_layer2_dropout0.5_lr4.000000e-04_anneal_100000.t7'
   --'/storage/attribute/checkpoints/tshirts_shirts_blous_knit_103607_8000/_inception-v3-2015-12-05_bn_removed_epoch33_bs16_encode256_layer2_dropout5e-1_lr4.000000e-04/model_id_inception-v3-2015-12-05_bn_removed_epoch33_bs16_encode256_layer2_dropout5e-1_lr4.000000e-04.t7'
   --'/storage/attribute/checkpoints/tshirts_shirts_blous_87844_6000/_inception-v3-2015-12-05_bn_removed_epoch31_bs16_encode256_layer2_lr4.000000e-04/model_id_inception-v3-2015-12-05_bn_removed_epoch31_bs16_encode256_layer2_lr4.000000e-04.t7'
   --'/storage/attribute/checkpoints/tshirts_shirts/_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4/model_id_inception-v3-2015-12-05_bn_removed_epoch16_bs16_embedding2048_encode128_layer3_lr4e-4.t7'
@@ -70,19 +72,20 @@ function agent.predict(input_tensor)
   if feats:dim() == 1 then
     feats = feats:resize(1, (#feats)[1])
   end
-  local seq = agent.lm:sample(feats, sample_opts)
+  local seq, seqLogprobs
+  seq, seqLogprobs = agent.lm:sample(feats, sample_opts)
   local sents = net_utils.decode_sequence(vocab, seq)
-  return sents
+  return sents, seqLogprobs
 end
 
 
 function agent.get_attribute(image_filename)
   local img = demon_utils.load_image(image_filename)
-  local sentences
+  local sentences, logprob
   if img then
-    sentences = agent.predict(img)
+    sentences, logprob = agent.predict(img)
   end
-  return sentences
+  return sentences, logprob
 end
 
 
