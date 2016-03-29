@@ -16,6 +16,8 @@ local net_utils = require 'misc.net_utils'
 local demon_utils = require '../utils/demon_utils'
 
 local agent_filename = 
+  -- exp_attribute shuffle cutoff100 finetune true
+  --'/storage/attribute/checkpoints/tshirts_shirts_blous_knit_97683_12800_seq_length-1/_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune0_cnnlr1.000000e-03_cnnwc1.000000e-04/model_id_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune0_cnnlr1.000000e-03_cnnwc1.000000e-04.t7'
   -- exp_attribute shuffle cutoff100 finetune false
   '/storage/attribute/checkpoints/tshirts_shirts_blous_knit_97683_12800_seq_length-1/_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune-1_cnnlr1.000000e-03_cnnwc1.000000e-04/model_id_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune-1_cnnlr1.000000e-03_cnnwc1.000000e-04.t7'
   -- exp_attribute
@@ -56,6 +58,7 @@ agent.lm:createClones()
 for k,v in pairs(agent) do v:cuda() end
 agent.cnn:evaluate()
 agent.lm:evaluate()
+print(agent.cnn)
 collectgarbage()
 
 
