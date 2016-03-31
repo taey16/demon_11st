@@ -18,17 +18,19 @@ print('%d in %.6f' % (dist, elapsed))
 dimension = 320
 query = np.zeros((1,dimension), dtype=np.uint64)
 ref = np.ones((1,dimension), dtype=np.uint64)
-print('Test for hamming_distance.hamming_distance')
+print('Test for hamming_distance.hamming_distance for %d dim.' % dimension)
 start = time.time()
 distance = hamming_distance.hamming_distance(query, ref)
 elapsed = time.time() - start
 print('%d in %.6f' % (distance, elapsed))
 
-print('Test for hamming_distance.hamming_distance_ref')
 num_ref = 1000000
+print('Test for hamming_distance.hamming_distance_ref for %d samples' % num_ref)
+start_mem_load = time.time()
 ref = np.ones((num_ref,dimension), dtype=np.uint64)
 dist= np.zeros((num_ref), dtype=np.uint32)
-#import pdb; pdb.set_trace()
+elapsed_mem_load = time.time() - start_mem_load
+print('Memory alloc. for %d samples in %f' % (num_ref, elapsed_mem_load))
 ref[num_ref-1,dimension-1] = 0
 ref[num_ref-1,dimension-2] = 0
 ref[num_ref-1,dimension-3] = 0
@@ -37,12 +39,9 @@ start = time.time()
 hamming_distance.hamming_distance_ref(query, ref, dist)
 elapsed = time.time() - start
 print('distance of last two element: %d, %d in elapsed: %f ' % (dist[num_ref-1], dist[num_ref-2], elapsed))
-#for d in dist:
-#  print('%d ' % (d))
-#print('elapsed: %f ' % (elapsed))
-
 
 """
+SEGFAULT oops~ (TODO)
 print('Test for hamming_distance.hamming_distance_full')
 num_query = 200
 num_ref = 10000
