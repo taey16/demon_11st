@@ -4,5 +4,6 @@ all:
 
 clean:
 	rm hamming_distance.so
+	rm hamming_distance.c
 	rm -r build
 
