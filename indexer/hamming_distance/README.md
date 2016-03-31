@@ -1,6 +1,6 @@
 # Python wrapper for Fast Hamming distance computation with Cython
 1. Prerequisits
-⋅⋅ Cython, numpy
+⋅⋅⋅Cython, numpy
 2. Compile
 ```
 hamming_distance$ ls
