@@ -16,10 +16,12 @@ local net_utils = require 'misc.net_utils'
 local demon_utils = require '../utils/demon_utils'
 
 local agent_filename = 
+  -- attribute 10cate
+  '/storage/attribute/checkpoints/tshirts_shirts_blous_knit_jacket_onepiece_skirts_coat_cardigan_vest_459105_40000_seq_length14/resception_ep29_bs16_flipfalse_croptrue_lstm_tanh_hid512_lay2_drop0.2_adam_lr1.000000e-03_seed0.90_start236940_every23694_finetune0_cnnlr1.000000e-03_cnnwc1.000000e-05/model_idresception_ep29_bs16_flipfalse_croptrue_lstm_tanh_hid512_lay2_drop0.2_adam_lr1.000000e-03_seed0.90_start236940_every23694_finetune0_cnnlr1.000000e-03_cnnwc1.000000e-05.t7'
   -- exp_attribute shuffle cutoff100 finetune true
   --'/storage/attribute/checkpoints/tshirts_shirts_blous_knit_97683_12800_seq_length-1/_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune0_cnnlr1.000000e-03_cnnwc1.000000e-04/model_id_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune0_cnnlr1.000000e-03_cnnwc1.000000e-04.t7'
   -- exp_attribute shuffle cutoff100 finetune false
-  '/storage/attribute/checkpoints/tshirts_shirts_blous_knit_97683_12800_seq_length-1/_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune-1_cnnlr1.000000e-03_cnnwc1.000000e-04/model_id_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune-1_cnnlr1.000000e-03_cnnwc1.000000e-04.t7'
+  --'/storage/attribute/checkpoints/tshirts_shirts_blous_knit_97683_12800_seq_length-1/_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune-1_cnnlr1.000000e-03_cnnwc1.000000e-04/model_id_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden384_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start53050_every5305_finetune-1_cnnlr1.000000e-03_cnnwc1.000000e-04.t7'
   -- exp_attribute
   --'/storage/attribute/checkpoints/tshirts_shirts_blous_knit_103607_8000_seq_length-1/_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden256_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start0_every6475_finetune-1_cnnlr4.000000e-04_cnnwc1.000000e-05/model_id_resception_bn_removed_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden256_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.94_start0_every6475_finetune-1_cnnlr4.000000e-04_cnnwc1.000000e-05.t7'
   --'/storage/attribute/checkpoints/tshirts_shirts_blous_knit_103607_8000_seq_length-1/_resception_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden256_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.50_start50000_every25000_finetune0_cnnlr1.000000e-03_test/model_id_resception_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden256_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.50_start50000_every25000_finetune0_cnnlr1.000000e-03_test.t7'
@@ -43,7 +45,7 @@ local opt = {
 }
 for k,v in pairs(opt) do opt[v] = checkpoint.opt[v] end
 local vocab = checkpoint.vocab
-local beam_size = 10
+local beam_size = 2
 local sample_opts = { 
   -- do sampleing from argmzx (1)
   -- or multinomial sampling (0)
@@ -56,7 +58,7 @@ local agent = checkpoint.protos
 agent.expander = nn.FeatExpander(opt.seq_per_img)
 agent.lm:createClones()
 for k,v in pairs(agent) do v:cuda() end
-agent.cnn:evaluate()
+--agent.cnn:evaluate()
 agent.lm:evaluate()
 print(agent.cnn)
 collectgarbage()
