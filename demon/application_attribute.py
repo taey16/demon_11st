@@ -129,7 +129,7 @@ def vsm_request_handler():
 @app.route('/request_handler_upload', methods=['POST'])
 @crossdomain(origin='*')
 def request_handler_upload():
-  #import pdb; pdb.set_trace()
+  import pdb; pdb.set_trace()
   is_browser = flask.request.args.get('is_browser', '1')
   app.result_dic = init_result_dic()
   try:
@@ -228,7 +228,8 @@ class application(web_server):
     app.vsm = vsm(\
       #'/storage/attribute/11st_julia_tshirts_shirtstes_blous_sentences.model_id_inception-v3-2015-12-05_bn_removed_epoch31_bs16_encode256_layer2_lr4.000000e-04.t7.txt'
       #'/storage/attribute/11st_julia_tshirts_shirts_blous_knit_sentences.model_id_inception-v3-2015-12-05_bn_removed_epoch33_bs16_encode256_layer2_dropout5e-1_lr4.000000e-04.t7.txt'
-      '/storage/attribute/11st_julia_tshirts_shirtstes_blous_knit_sentences.model_id_resception_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden256_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.50_start50000_every25000_finetune0_cnnlr1.000000e-03_test.t7.txt'
+      #'/storage/attribute/11st_julia_tshirts_shirtstes_blous_knit_sentences.model_id_resception_epoch19_bs16_flipfalse_croptrue_lstm_tanh_hidden256_layer2_dropout0.5_lr1.000000e-03_anneal_seed0.50_start50000_every25000_finetune0_cnnlr1.000000e-03_test.t7.txt'
+      '/storage/attribute/PBrain_tshirts_shirts_blous_knit_jacket_onepiece_skirts_coat_cardigan_vest.csv.ver.txt'
     )
 
     agent_detector_root = '/works/demon_11st/agent/detection'
