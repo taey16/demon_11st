@@ -3,7 +3,7 @@ import numpy as np
 import cPickle as pickle
 import logging
 import sys
-c_hamming_distance_module = '/works/demon_11st/index/hamming_distance'
+c_hamming_distance_module = '/works/demon_11st/indexer/hamming_distance'
 sys.path.append(c_hamming_distance_module)
 import hamming_distance
 
@@ -30,19 +30,22 @@ class indexer:
     np.delete(self.database[index_key])
 
 
-  def hashing(self, feature):
+  @staticmethod
+  def hashing(feature):
     binary_feature = np.uint8(feature > 0)
     return binary_feature
 
   
-  def pack_bit_16(self, binary_feature):
+  @staticmethod
+  def pack_bit_16(binary_feature):
     binary_feature = (np.packbits(binary_feature, axis=1)).astype(np.uint16)
     shifted_binary = binary_feature << 8
     packed_feature = shifted_binary[:,0::2] + binary_feature[:,1::2]
     return packed_feature
 
 
-  def pack_bit_64(self, binary_feature):
+  @staticmethod
+  def pack_bit_64(binary_feature):
     binary_feature = (np.packbits(binary_feature, axis=1)).astype(np.uint64)
     shifted_binary = binary_feature << 8
     packed_feature = shifted_binary[:,0::2] + binary_feature[:,1::2]

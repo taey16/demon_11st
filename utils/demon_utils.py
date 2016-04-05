@@ -13,10 +13,11 @@ import numpy as np
 class demon_utils:
 
   UPLOAD_FOLDER = '/storage/enroll'
-  host = 'http://10.202.34.211:2596/PBrain/'
+  host = 'http://%s:2596/PBrain/'
 
 
-  def __init__(self, upload_folder=None):
+  def __init__(self, host_ip, upload_folder=None):
+    self.host = self.host % host_ip
     if upload_folder <> None:
       self.UPLOAD_FOLDER = upload_folder
 

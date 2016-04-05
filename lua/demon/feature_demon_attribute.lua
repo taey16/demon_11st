@@ -2,10 +2,9 @@
 local app  = require('waffle') {
   autocache = true
 }
-local async = require 'async'
---require 'image'
+--local async = require 'async'
 package.path = '/works/demon_11st/lua/?.lua;' .. package.path
-local agent = require 'agent.agent_attribute'
+local agent_attribute= require 'agent.agent_attribute'
 local downloader = require 'utils.demon_utils'
 
 
@@ -15,18 +14,19 @@ end
 
 
 function call_feature_demon(image_filename)
-  --return agent.predict(input_data)
-  return agent.get_attribute(image_filename)
+  local sentence sentence_scores = agent_attribute.get_attribute(image_filename)
+  return {sentence=sentence, sentence_scores=sentence_scores}
 end
 
 
-function encode_table(_query_url, _sentence, _flag_result)
+function encode_table(_query_url, _sentence, _sentence_scores, _flag_result)
   assert(_query_url, 
     string.format('ERROR check query_url: %s', _query_url)
   )
   local result = {
     url = _query_url,
     sentence = _sentence,
+    sentence_scores = _sentence_scores,
     result_sentence = _flag_result,
   }
   return result
@@ -35,21 +35,25 @@ end
 
 app.get("/attribute_request_handler", function(req, res)
   local query_url = req.url.args.url or nil
+  local filename = req.url.args.local_path or nil
   local result = {}
   if query_url then
-    local filename = download_get_req(query_url)
-    --local img = image.load(filename)
-    print('Start caption:')
-    local sentence = call_feature_demon(filename)
-    for i,sent in pairs(sentence) do
-      print(sent)
-    end
-    result = encode_table(query_url, sentence, true)
-  else
-    result = encode_table(query_url, '', false)
+    filename = download_get_req(query_url)
+  elseif filename then
+    query_url = filename
   end
+  print('Start caption:')
+  local sentence_info = call_feature_demon(filename)
+  sentence = sentence_info.sentence
+  sentence_scores = sentence_info.sentence_scores
+  print(sentence_info)
+  for i,word in pairs(sentence) do
+    print(string.format('%s %f', word, sentence_scores[i]))
+  end
+  result = encode_table(
+    query_url, sentence_info.sentence, sentence_info.sentence_scores, true)
   res.json(result)
-  os.execute('rm -f '..filename)
+  --os.execute('rm -f '..filename)
 end)
 
 
@@ -74,7 +78,9 @@ end)
 
 
 local options = {}
-options.host = '10.202.34.211'
+options.host = 
+  --'10.202.34.211'
+  '10.202.35.109'
 options.port = '8080'
 app.listen(options)
 

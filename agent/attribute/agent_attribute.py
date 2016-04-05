@@ -1,5 +1,6 @@
 
 #-*- coding: utf8 -*-
+
 import os
 import urllib2
 
@@ -26,9 +27,11 @@ class agent_attribute:
       response = urllib2.urlopen(url)
     return response.read()
 
+
   def extract_feature(self, image, blob_name, oversample=True):
     try:
-      pass
+      #pass
+      raise NotImplementedError()
     except Exception as err:
       print('ERROR extract_feature: %s', err)
       return None
