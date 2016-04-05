@@ -54,13 +54,17 @@ class agent_detector(object):
     result = {}
     if len(scores) == 0:
       print('ERROR in agent.detect (scores and boxes are all [])' )
-      result['result_roi'] = True
+      result['result_roi'] = False
       result['roi'] = []
+      result['result_feature'] = False
+      result['feature'] = []
       return result
 
     roi_boxes_and_scores, feature_vectors = self.post_process(scores, boxes)
     result['result_roi'] = True
     result['roi'] = roi_boxes_and_scores
+    result['result_feature'] = True
+    result['feature'] = feature_vectors
 
     return result
 

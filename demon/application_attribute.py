@@ -95,6 +95,34 @@ def encode_flask_template(_html_filename, _has_result, _result_dic, _flag='succe
   )
 
 
+@app.route('/julia', methods=['GET'])
+@crossdomain(origin='*')
+def julia():
+  imageurl = flask.request.args.get('url', None)
+  local_path = flask.request.args.get('local_path', None)
+  app.result_dic = init_result_dic()
+  import pdb; pdb.set_trace()
+  try:
+    app.result_dic = set_result_dic(app.result_dic, {'url': imageurl})
+    filename, local_url = app.demon_utils.download_get_req(imageurl)
+    result = call_attribute(app.agent_attribute, local_url, filename)
+    app.result_dic = set_result_dic(app.result_dic, result)
+    result = call_detector(app.agent_detector, filename)
+    roi_box_image = result['roi_box_image']
+    result['roi_box_image'] = \
+      filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/') + '.det.jpg'
+    roi_box_image.save('%s' % filename + '.det.jpg')
+    app.result_dic = set_result_dic(app.result_dic, result)
+  except Exception as err:
+    logging.info('julia error: %s', err)
+    return encode_json({'result': False, 'url': imageurl})
+  
+  for key in app.result_dic['roi'].keys():
+    app.result_dic['roi'][key] = app.result_dic['roi'][key].tolist()
+  return encode_json(app.result_dic)
+
+
+
 @app.route('/vsm_request_handler', methods=['GET'])
 @crossdomain(origin='*')
 def vsm_request_handler():
