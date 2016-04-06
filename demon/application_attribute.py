@@ -91,7 +91,7 @@ def call_detector(agent, local_filename):
   return result
 
 
-def call_vsm(agent, query_string, limit=400):
+def call_vsm(agent, query_string, limit=600):
   result = app.vsm.do_search(query_string, limit)
   return result
 
@@ -197,7 +197,7 @@ def request_handler():
   local_path = flask.request.args.get('local_path', None)
   is_browser = flask.request.args.get('is_browser', '')
   app.result_dic = init_result_dic()
-  #import pdb; pdb.set_trace()
+  import pdb; pdb.set_trace()
   try:
     if imageurl <> None:
       app.result_dic = set_result_dic(app.result_dic, {'url': imageurl})

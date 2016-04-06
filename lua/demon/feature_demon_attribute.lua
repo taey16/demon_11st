@@ -1,6 +1,6 @@
 
 local app  = require('waffle') {
-  autocache = true
+  autocache = true, debug = true
 }
 --local async = require 'async'
 package.path = '/works/demon_11st/lua/?.lua;' .. package.path
@@ -14,7 +14,7 @@ end
 
 
 function call_feature_demon(image_filename)
-  local sentence sentence_scores = agent_attribute.get_attribute(image_filename)
+  local sentence, sentence_scores = agent_attribute.get_attribute(image_filename)
   return {sentence=sentence, sentence_scores=sentence_scores}
 end
 
@@ -47,9 +47,9 @@ app.get("/attribute_request_handler", function(req, res)
   sentence = sentence_info.sentence
   sentence_scores = sentence_info.sentence_scores
   print(sentence_info)
-  for i,word in pairs(sentence) do
-    print(string.format('%s %f', word, sentence_scores[i]))
-  end
+  --for i,word in pairs(sentence) do
+  --  print(string.format('%s %f', word, sentence_scores[i]))
+  --end
   result = encode_table(
     query_url, sentence_info.sentence, sentence_info.sentence_scores, true)
   res.json(result)
@@ -66,14 +66,11 @@ end)
 
 app.error(500, function(description, req, res)
   local url = string.format('%s%s', req.headers.host, req.url.path)
-  res.status(500).send(description .. ' request: ' .. url)
-  --[[
   if app.debug then
-    res.status(500).send(description)
+    res.status(500).send(description .. ' request: ' .. url)
   else
     res.status(500).send('500 Error')
   end
-  --]]
 end)
 
 

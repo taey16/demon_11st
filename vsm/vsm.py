@@ -140,7 +140,7 @@ class vsm:
       return 0.0
 
 
-  def do_search(self, query_string=None, limit=400):
+  def do_search(self, query_string=None, limit=600):
     """Asks the user what they would like to search for, and returns a
     list of relevant documents, in decreasing order of cosine
     similarity."""

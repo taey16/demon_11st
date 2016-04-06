@@ -15,13 +15,20 @@ end
 
 
 function demon_utils.load_image(image_filename)
+  --[[
   local info = gm.info(image_filename)
   local img
-  --print(info.format)
+  print(info.format)
   if info.format == 'JPEG' or info.format == 'PNG' then
     img = gm.load(image_filename)
     --local img = image.load(image_filename)
   end
+  return img
+  --]]
+  local img, ok
+  ok, img = pcall(function()
+      return gm.load(image_filename)
+  end)
   return img
 end
 
