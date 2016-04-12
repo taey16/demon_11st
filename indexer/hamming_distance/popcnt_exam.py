@@ -14,7 +14,7 @@ dist = hamming_distance.popcnt(diff)
 elapsed = time.time() - start
 print('%d in %.6f' % (dist, elapsed))
 
-
+import pdb; pdb.set_trace();
 dimension = 320
 query = np.zeros((1,dimension), dtype=np.uint64)
 ref = np.ones((1,dimension), dtype=np.uint64)

@@ -31,7 +31,9 @@ class indexer:
 
 
   def hashing(self, feature):
-    binary_feature = np.uint8(feature > 0)
+    #binary_feature = np.uint8(feature > 0)
+    bins = np.array([0],dtype=np.uint8)
+    binary_feature = np.digitize(feature,bins,right=True)
     return binary_feature
 
   
@@ -43,6 +45,7 @@ class indexer:
 
 
   def pack_bit_64(self, binary_feature):
+    """ 
     binary_feature = (np.packbits(binary_feature, axis=1)).astype(np.uint64)
     shifted_binary = binary_feature << 8
     packed_feature = shifted_binary[:,0::2] + binary_feature[:,1::2]
@@ -52,6 +55,11 @@ class indexer:
     binary_feature = packed_feature
     shifted_binary = binary_feature << 32
     packed_feature = shifted_binary[:,0::2] + binary_feature[:,1::2]
+    """
+    packed_feature = np.uint64(np.packbits(np.uint8(binary_feature),axis=1))
+    for i in range (1,5):
+      feature_shift = packed_feature << 8*i
+      packed_feature = feature_shift[:,0::2] + packed_feature[:,1::2]
     return packed_feature
 
 
