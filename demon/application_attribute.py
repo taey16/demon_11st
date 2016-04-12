@@ -12,7 +12,6 @@ import time
 #from PIL import Image
 
 html_filename = 'index_11st_attribute.html'
-html_filename_vsm = 'index_vsm.html'
 port = 8081
 
 # global the flask app object
@@ -278,7 +277,6 @@ def request_handler():
 @crossdomain(origin='*')
 def index():
   return flask.render_template(
-    #html_filename_vsm, has_result=False, result=[], flag='')
     html_filename, has_result=False, result=[], flag='')
 
 
