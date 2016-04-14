@@ -15,7 +15,6 @@ end
 
 
 function demon_utils.load_image(image_filename)
-  --[[
   local info = gm.info(image_filename)
   local img
   print(info.format)
@@ -24,12 +23,13 @@ function demon_utils.load_image(image_filename)
     --local img = image.load(image_filename)
   end
   return img
-  --]]
+  --[[
   local img, ok
   ok, img = pcall(function()
       return gm.load(image_filename)
   end)
-  return img
+  return img, ok
+  --]]
 end
 
 

@@ -83,8 +83,9 @@ class agent_detector(object):
 
   def extract_feature(self, blob_name):
     #feature = np.reshape(np.squeeze(self.net.blobs[blob_name].data))
-    feature = np.squeeze(self.net.blobs[blob_name].data)
-    return feature
+    #import pdb; pdb.set_trace()
+		feature = np.squeeze(self.net.blobs[blob_name].data)
+		return feature
 
 
   def post_process(self, scores, boxes, blob_name='fc7'):
