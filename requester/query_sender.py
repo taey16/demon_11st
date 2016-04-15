@@ -11,7 +11,6 @@ import json
 url = 'http://10.202.35.109:8081/request_handler?url=http%3A%2F%2Fg01.a.alicdn.com%2Fkf%2FHTB154HuHVXXXXalXpXXq6xXFXXXU%2F2014-Lady-Sexy-vintage-Style-one-piece-Hand-painted-Lotus-Traditional-Chinese-Clothing-Cheongsam-dress-for.jpg'
 
 try:
-  import pdb; pdb.set_trace()
   # get json object
   response = urllib2.urlopen(url)
   # read json object into managable json object in python
@@ -20,6 +19,7 @@ try:
   # print retrieved_items
   for key in retrieved_items['retrieved_item']:
     print 'items:', retrieved_items['retrieved_item'][key] 
+  import pdb; pdb.set_trace()
 
   print 'keys, {}'.format(retrieved_items.keys())
   print 'request_category,', retrieved_items['category_name']
