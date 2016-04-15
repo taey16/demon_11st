@@ -116,6 +116,7 @@ end
 agent.model_filename = agent_filename
 agent.opts = opts
 agent.sample_opts = sample_opts
+agent.vocab = vocab
 
 print '===> Loading agent_attribute success'
 io.flush(print(string.format(
