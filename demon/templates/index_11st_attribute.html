@@ -85,7 +85,9 @@
 
       {% if has_result %}
       <center>
+        {% if result['url']%}
         <img img class="image_show" src="{{result['url']}}" height="292" width="292">
+        {% endif %}
         {% if result['result_category'] %}
           <h3>Category:</h3>
           {% for category_name in result['category_name'] %}
