@@ -105,6 +105,14 @@ function agent.get_attribute(image_filename)
 end
 
 
+function agent.extract_feature(image_filename)
+  local sentences, logprob = agent.get_attribute(image_filename)
+  local feature_vector = agent.cnn[#agent.cnn].output
+
+  return feature_vector
+end
+
+
 agent.model_filename = agent_filename
 agent.opts = opts
 agent.sample_opts = sample_opts
