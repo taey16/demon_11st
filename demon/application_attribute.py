@@ -12,6 +12,7 @@ import time
 #from PIL import Image
 
 html_filename = 'index_11st_attribute.html'
+host_ip = '10.202.35.109'
 port = 8081
 
 # global the flask app object
@@ -138,7 +139,7 @@ def detector_request_handler():
     filename, local_url = app.demon_utils.download_get_req(imageurl)
     result = call_detector(app.agent_detector, filename)
     roi_box_image = result['roi_box_image']
-    result['bbox_image_url'] = filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/')
+    result['bbox_image_url'] = filename.replace('/storage/', 'http://%s:2596/PBrain/' % host_ip)
     roi_box_image.save('%s' % filename)
     app.result_dic = set_result_dic(app.result_dic, result)
   except Exception as err:
@@ -217,7 +218,7 @@ def request_handler_upload():
     result = call_detector(app.agent_detector, filename)
     roi_box_image = result['roi_box_image']
     result['roi_box_image'] = \
-      filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/') + '.det.jpg'
+      filename.replace('/storage/', 'http://%s:2596/PBrain/' % host_ip) + '.det.jpg'
     roi_box_image.save('%s' % filename + '.det.jpg')
     app.result_dic = set_result_dic(app.result_dic, result)
     app.result_dic['url'] = local_url
@@ -252,7 +253,7 @@ def request_handler():
     result = call_detector(app.agent_detector, filename)
     roi_box_image = result['roi_box_image']
     result['roi_box_image'] = \
-      filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/') + '.det.jpg'
+      filename.replace('/storage/', 'http://%s:2596/PBrain/' % host_ip) + '.det.jpg'
     roi_box_image.save('%s' % filename + '.det.jpg')
     app.result_dic = set_result_dic(app.result_dic, result)
   except Exception as err:
@@ -268,7 +269,7 @@ def request_handler():
     return encode_json(app.result_dic)
   else:
     if local_url == None:
-      app.result_dic['url'] = filename.replace('/storage/', 'http://10.202.34.211:2596/PBrain/')
+      app.result_dic['url'] = filename.replace('/storage/', 'http://%s:2596/PBrain/' % host_ip)
     return encode_flask_template(\
       html_filename, True, app.result_dic, 'success')
 
@@ -292,10 +293,8 @@ class application(web_server):
     sys.path.insert(0, vsm_root)
     from vsm import vsm
     #import pdb; pdb.set_trace()
-    app.vsm = vsm(\
-      #'/storage/attribute/11st_julia_tshirts_shirtstes_blous_sentences.model_id_inception-v3-2015-12-05_bn_removed_epoch31_bs16_encode256_layer2_lr4.000000e-04.t7.txt'
-      '/storage/attribute/11st_julia_tshirts_shirts_blous_knit_sentences.model_id_inception-v3-2015-12-05_bn_removed_epoch33_bs16_encode256_layer2_dropout5e-1_lr4.000000e-04.t7.txt'
-    )
+    image_sentence_filename = '/storage/attribute/PBrain_all.csv.image_sentence.txt'
+    app.vsm = vsm(image_sentence_filename)
 
     agent_detector_root = '/works/demon_11st/agent/detection'
     sys.path.insert(0, agent_detector_root)
@@ -310,7 +309,7 @@ class application(web_server):
     agent_attribute_root = '/works/demon_11st/agent/attribute' 
     sys.path.insert(0, agent_attribute_root)
     from agent_attribute import agent_attribute 
-    attribute_demon_host_ip = '10.202.34.211'
+    attribute_demon_host_ip = host_ip
     attribute_demon_port= 8080
     app.agent_attribute = agent_attribute( \
       attribute_demon_host_ip, attribute_demon_port)
