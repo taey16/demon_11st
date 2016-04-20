@@ -13,7 +13,9 @@ import time
 #from PIL import Image
 
 html_filename = 'index_11st_attribute.html'
-host_ip = '10.202.35.109'
+host_ip = \
+  '10.202.34.172'
+  #'10.202.35.109'
 port = 8081
 
 # global the flask app object
