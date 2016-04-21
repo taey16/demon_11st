@@ -8,33 +8,38 @@ import io
 #url = 'http://175.126.56.112:15002/url_request_handler?category=127687&url=https://s-media-cache-ak0.pinimg.com/736x/e3/40/28/e34028c15d0b10064d64a4defe63f7ec.jpg'
 #url = 'http://175.126.56.112:15002/url_request_handler?category=1530&url=http%3A%2F%2Fimage.gsshop.com%2Fimage%2F15%2F53%2F15537256_L1.jpg'
 #url = 'http://175.126.56.112:8080/mosaic_request_handler?url=http://i.011st.com/aj/0/6/9/0/5/0/1213069050_L300.jpg'
-url = 'http://10.202.34.211:8081/request_handler?url=http%3A%2F%2Fg01.a.alicdn.com%2Fkf%2FHTB154HuHVXXXXalXpXXq6xXFXXXU%2F2014-Lady-Sexy-vintage-Style-one-piece-Hand-painted-Lotus-Traditional-Chinese-Clothing-Cheongsam-dress-for.jpg'
-
-try:
-  output=io.open('result_log.log','w')
+#url = 'http://10.202.34.211:8081/request_handler?url=http%3A%2F%2Fg01.a.alicdn.com%2Fkf%2FHTB154HuHVXXXXalXpXXq6xXFXXXU%2F2014-Lady-Sexy-vintage-Style-one-piece-Hand-painted-Lotus-Traditional-Chinese-Clothing-Cheongsam-dress-for.jpg'
+url_prefix = 'http://10.202.34.211:8081/request_handler?url=http://i.011st.com'
+urls = io.open('/storage/attribute/PBrain_all.csv','r')
+output=io.open('result_log.log','w')
+i=0
+for url in urls:
+  try:
   # get json object
-  response = urllib2.urlopen(url)
+    response = urllib2.urlopen(url_prefix+url)
   # read json object into managable json object in python
-  retrieved_items = json.loads(response.read())
-  output.write(unicode(json.dumps(retrieved_items)))
+    retrieved_items = json.loads(response.read())
+    output.write(unicode(json.dumps(retrieved_items)))
   # print retrieved_items
-  for key in retrieved_items['retrieved_item']:
-    print 'items:', retrieved_items['retrieved_item'][key] 
-  import pdb; pdb.set_trace()
-
-  print 'keys, {}'.format(retrieved_items.keys())
-  print 'request_category,', retrieved_items['category_name']
-  #print 'query,', retrieved_items['query']
-  print '# of retrieved items,', len(retrieved_items['retrieved_item'])
-  #print 'result,', retrieved_items['feature']
-  output.close()
-except urllib2.HTTPError, err:
-  if err.code == 404:
-    print "Page not found!"
-  elif err.code == 403:
-    print "Access denied!"
-  else:
-    print "Something happened! Error code", err.code
-except urllib2.URLError, err:
-  print "Some other error happened:", err.reason
-
+    i += 1
+    print i
+    if i%250==249:
+      output.close()
+      output = io.open('result_log.log','a')
+    if i == 10000:
+      print '10000'
+      break
+  except urllib2.HTTPError, err:
+    if err.code == 404:
+      print "Page not found!"
+      continue
+    elif err.code == 403:
+      print "Access denied!"
+      continue
+    else:
+      print "Something happened! Error code", err.code
+      continue
+  except urllib2.URLError, err:
+    print "Some other error happened:", err.reason
+    continue
+output.close()

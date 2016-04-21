@@ -20,7 +20,7 @@ class korean_url_handler:
     self.http = urllib3.PoolManager(
       num_pools=num_workers, 
       cert_reqs='CERT_REQUIRED', 
-      ca_certs=certifi.where())
+      ca_certs=certifi.where(),timeout=5.0)
 
 
   def parsing_imagedataurl(self, req_url):
