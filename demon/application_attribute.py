@@ -10,7 +10,10 @@ import json
 import logging
 import time
 
-#from PIL import Image
+indexer_root = '/works/demon_11st/indexer/'
+sys.path.insert(0, indexer_root)
+from indexer import indexer
+
 
 html_filename = 'index_11st_attribute.html'
 host_ip = \
@@ -45,7 +48,10 @@ def encode_json(result_dic):
   #import pdb; pdb.set_trace()
   for key in result_dic['roi'].keys():
     result_dic['roi'][key] = result_dic['roi'][key].tolist()
-    result_dic['feature'][key] = result_dic['feature'][key].tolist()
+    if result_dic['feature'] <> None:
+      result_dic['feature'][key] = result_dic['feature'][key].tolist()
+    if result_dic['signature'] <> None:
+      result_dic['signature'][key] = result_dic['signature'][key].tolist()
   result_json = json.dumps(result_dic)
   return result_json
 
@@ -89,11 +95,23 @@ def call_detector(agent, local_filename):
       agent.draw_rois(agent.img, result['roi'])
     logging.info('detection done, %.4f', time.time() - fe_starttime)
   except Exception as err:
-    logging.info('call_attribute error: %s', err)
+    logging.info('call_detector error: %s', err)
     return {'result': False, 'result_roi': False}
 
   return result
 
+
+def call_indexer(result_dic):
+  result_dic['signature'] = dict()
+  for cate_id, features in result_dic['feature'].iteritems():
+    binary_features = indexer.hashing(features)
+    result_dic['signature'][cate_id] = indexer.pack_bit_64(binary_features)
+
+  result_dic['result_signature'] = True
+  result_dic['result_feature'] = False
+  result_dic['feature'] = None
+  return result_dic
+      
 
 def call_vsm(vsm, query_string, imageurl, limit=500):
   try:
@@ -148,11 +166,13 @@ def call_attr_detect_vsm(url,filename,is_browser):
     result['roi_box_image'] = \
       filename.replace('/storage/', 'http://%s:2596/PBrain/' % host_ip) + '.det.jpg'
     roi_box_image.save('%s' % filename + '.det.jpg')
+    #app.result_dic = set_result_dic(app.result_dic, result)
+    result = call_indexer(result)
     app.result_dic = set_result_dic(app.result_dic, result)
     if is_browser == 1:    
       result,flag = call_vsm(app.vsm,app.result_dic['sentence'][0],url)
       app.result_dic = set_result_dic(app.result_dic,result)
-      app.flag =flag
+      app.flag = flag
   except Exception as err:
     raise err	
 	
@@ -255,6 +275,7 @@ class application(web_server):
     from demon_utils import demon_utils
     app.demon_utils = demon_utils(host_ip, '/storage/enroll')
 
+
     vsm_root = '/works/demon_11st/vsm'
     sys.path.insert(0, vsm_root)
     from vsm import vsm
@@ -280,6 +301,7 @@ class application(web_server):
     attribute_demon_port= 8080
     app.agent_attribute = agent_attribute( \
       attribute_demon_host_ip, attribute_demon_port)
+
 
     app.result_dic = init_result_dic()
 
