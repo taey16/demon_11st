@@ -73,28 +73,20 @@ function agent.predict(input_tensor)
   local sents = net_utils.decode_sequence(vocab, seq)
   print(sents[1])  
   local words = string.split(sents[1], ' ')
-  return sents, seqLogprobs:squeeze()[{{1,#words}}]
+  return sents, seqLogprobs:squeeze()[{{1,#words}}], feats
 end
 
 
 function agent.get_attribute(image_filename)
   local img = demon_utils.load_image(image_filename)
-  local sentences, logprob
+  local sentences, logprob, feature_vector
   if img then
-    sentences, logprob = agent.predict(img)
+    sentences, logprob, feature_vector = agent.predict(img)
   end
   if logprob then
     logprob = torch.exp(logprob):totable()
   end
-  return sentences, logprob
-end
-
-
-function agent.extract_feature(image_filename)
-  local sentences, logprob = agent.get_attribute(image_filename)
-  local feature_vector = agent.cnn[#agent.cnn].output
-
-  return feature_vector
+  return sentences, logprob, feature_vector
 end
 
 
