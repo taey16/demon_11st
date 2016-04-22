@@ -169,7 +169,8 @@ def call_attr_detect_vsm(url,filename,is_browser):
     #app.result_dic = set_result_dic(app.result_dic, result)
     result = call_indexer(result)
     app.result_dic = set_result_dic(app.result_dic, result)
-    if is_browser == 1:    
+    #import pdb;pdb.set_trace()
+    if is_browser == '1':    
       result,flag = call_vsm(app.vsm,app.result_dic['sentence'][0],url)
       app.result_dic = set_result_dic(app.result_dic,result)
       app.flag = flag
