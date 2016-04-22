@@ -19,7 +19,9 @@ html_filename = 'index_11st_attribute.html'
 host_ip = \
   '10.202.34.172'
   #'10.202.34.211'
-port = 8081
+port = 
+  8081
+attribute_demon_port= port - 1
 
 # global the flask app object
 app = flask.Flask(__name__)
@@ -299,7 +301,6 @@ class application(web_server):
     sys.path.insert(0, agent_attribute_root)
     from agent_attribute import agent_attribute 
     attribute_demon_host_ip = host_ip
-    attribute_demon_port= 8080
     app.agent_attribute = agent_attribute( \
       attribute_demon_host_ip, attribute_demon_port)
 

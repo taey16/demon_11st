@@ -6,16 +6,20 @@ import json
 import io
 
 input_path = \
-  '/storage/attribute/PBrain_all_0000001_0200000.csv'
+  '/storage/attribute/PBrain_all_0200001_0400000.csv'
+  #'/storage/attribute/PBrain_all_0000001_0200000.csv'
 host_ip = \
   '10.202.34.172'
+port = \
+  7081
+  #8081
 
 
 machine_prefix = \
-  'http://%s:8081/request_handler?url=http://i.011st.com/%%s' % host_ip
+  'http://%s:%d/request_handler?url=http://i.011st.com/%%s' % (host_ip, port)
 
 
-import pdb; pdb.set_trace()
+#import pdb; pdb.set_trace()
 urls = io.open(input_path, 'r')
 success_counter = 0
 output_json_filename = '%s.%04d.json' % (input_path, success_counter)
@@ -31,7 +35,10 @@ for url in urls:
     output_fp.write(unicode('\n'))
     success_counter += 1
 
-    if success_counter % 10 == 0:
+    if success_counter % 100 == 0:
+      print('%d th image complete' % success_counter)
+
+    if success_counter % 10000 == 0:
       output_fp.close()
       print('SUCCESS processing %s' % output_json_filename)
       output_json_filename = '%s.%04d.json' % (input_path, success_counter)
