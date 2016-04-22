@@ -40,7 +40,7 @@ def init_result_dic():
   return result_dic
 
 def encode_json(result_dic):
-#  import pdb; pdb.set_trace()
+  #import pdb; pdb.set_trace()
   for key in result_dic['roi'].keys():
     result_dic['roi'][key] = result_dic['roi'][key].tolist()
     result_dic['feature'][key] = result_dic['feature'][key].tolist()
@@ -93,7 +93,7 @@ def call_detector(agent, local_filename):
   return result
 
 
-def call_vsm(vsm, query_string, imageurl, limit=600):
+def call_vsm(vsm, query_string, imageurl, limit=500):
   try:
 #    import pdb; pdb.set_trace()
     flag ={}
@@ -137,7 +137,7 @@ def julia():
   
   return encode_json(app.result_dic)
 
-def call_attr_detect_vsm(url,filename):
+def call_attr_detect_vsm(url,filename,is_browser):
   try:
     result = call_attribute(app.agent_attribute, url, filename)
     app.result_dic = set_result_dic(app.result_dic, result)
@@ -147,11 +147,12 @@ def call_attr_detect_vsm(url,filename):
       filename.replace('/storage/', 'http://%s:2596/PBrain/' % host_ip) + '.det.jpg'
     roi_box_image.save('%s' % filename + '.det.jpg')
     app.result_dic = set_result_dic(app.result_dic, result)
-    result,flag = call_vsm(app.vsm,app.result_dic['sentence'][0],url)
-    app.result_dic = set_result_dic(app.result_dic,result)
+    if is_browser == 1:    
+      result,flag = call_vsm(app.vsm,app.result_dic['sentence'][0],url)
+      app.result_dic = set_result_dic(app.result_dic,result)
+      app.flag =flag
   except Exception as err:
     raise err	
-  return flag
 	
 
 
@@ -185,7 +186,7 @@ def request_handler_upload():
     imagefile = flask.request.files['imagefile']
     filename, local_url = app.demon_utils.download_post_req(imagefile)
     logging.info('local_path %s', filename)
-    flag = call_attr_detect_vsm(local_url,filename)
+    call_attr_detect_vsm(local_url,filename,is_browser)
   except Exception as err:
     logging.info('request_handler_upload error: %s', err)
     if is_browser <> '1': return encode_json({'result': False, 'url': local_url})
@@ -201,7 +202,7 @@ def request_handler_upload():
     if local_url == None:
       app.result_dic['url'] = filename.replace('/storage/', 'http://%s:2596/PBrain/' % host_ip)
     return encode_flask_template(\
-      html_filename, True, app.result_dic,flag)
+      html_filename, True, app.result_dic,app.flag)
 
 
 @app.route('/request_handler', methods=['GET'])
@@ -221,7 +222,7 @@ def request_handler():
         local_url = None
         filename = local_path
       else: return encode_json({'url': local_path, 'result': False})
-    flag = call_attr_detect_vsm(imageurl,filename)
+    call_attr_detect_vsm(imageurl,filename,is_browser)
   except Exception as err:
     logging.info('request_handler error: %s', err)
     if is_browser <> '1': return encode_json({'result': False, 'url': imageurl})
@@ -230,14 +231,12 @@ def request_handler():
         html_filename, False, app.result_dic, 'fail')
   
   if is_browser <> '1':
-   # for key in app.result_dic['roi'].keys():
-   #   app.result_dic['roi'][key] = app.result_dic['roi'][key].tolist()
     return encode_json(app.result_dic)
   else:
     if local_url == None:
       app.result_dic['url'] = filename.replace('/storage/', 'http://%s:2596/PBrain/' % host_ip)
     return encode_flask_template(\
-      html_filename, True, app.result_dic, flag)
+      html_filename, True, app.result_dic, app.flag)
 
 @app.route('/')
 @crossdomain(origin='*')

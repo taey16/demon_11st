@@ -64,8 +64,8 @@ class agent_detector(object):
       result['result_roi'] = True
       result['roi'] = roi_boxes_and_scores
       result['result_feature'] = True
-      result['feature'] = feature_vectors
-
+      #result['feature'] = feature_vectors
+      result['feature'] = self.hashing_feature(feature_vectors)
     return result
 
 
@@ -79,7 +79,15 @@ class agent_detector(object):
       return [], [] 
 
     return scores, boxes
-
+  def hashing_feature(self, vectors):
+    #import pdb; pdb.set_trace()
+    features ={}
+    for key,vec in vectors.iteritems():
+      feature = np.squeeze(vec)
+      bins = np.array([0],dtype=np.uint8)
+      feature = np.digitize(feature,bins,right=True)
+      features[key] = feature	
+    return features
 
   def extract_feature(self, blob_name):
     #feature = np.reshape(np.squeeze(self.net.blobs[blob_name].data))
