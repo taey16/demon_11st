@@ -1,3 +1,4 @@
+require 'paths'
 require 'torch'
 require 'nn'
 require 'nngraph'
@@ -46,10 +47,13 @@ local agent = checkpoint.protos
 agent.expander = nn.FeatExpander(opt.seq_per_img)
 agent.lm:createClones()
 for k,v in pairs(agent) do v:cuda() end
+
+agent.cnn = paths.dofile('/works/image-encoder/utils/BN-absorber.lua')(agent.cnn)
+
 agent.cnn:evaluate()
 agent.lm:evaluate()
-print(agent.cnn)
 collectgarbage()
+print(agent.cnn)
 
 
 function agent.preprocess(input)

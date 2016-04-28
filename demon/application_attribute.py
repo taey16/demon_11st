@@ -16,11 +16,16 @@ from indexer import indexer
 
 
 html_filename = 'index_11st_attribute.html'
+
 host_ip = \
-  '10.202.34.172'
+  '10.202.34.211'
+  #'10.202.34.172'
   #'10.202.34.211'
-port = 
-  8081
+port = \
+  7081
+  #6081
+  #8081
+
 attribute_demon_port= port - 1
 
 # global the flask app object
@@ -115,9 +120,8 @@ def call_indexer(result_dic):
   return result_dic
       
 
-def call_vsm(vsm, query_string, imageurl, limit=500):
+def call_vsm(vsm, query_string, imageurl, limit=50000):
   try:
-#    import pdb; pdb.set_trace()
     flag ={}
     start_vsm = time.time()
     result = vsm.do_search(query_string,limit)
@@ -134,6 +138,18 @@ def call_vsm(vsm, query_string, imageurl, limit=500):
 		raise err
   return result, flag
 
+def call_search(nnsearch,result_dic):
+  try:
+    result =  nnsearch.do_search(result_dic) 
+    result_dic = {}
+    i=0
+    for k,v in result:
+      result_dic[i]=v[0]
+      i+=1
+    return result_dic
+  except Exception as err:
+    logging.info('search error: %s', err)
+    raise err 
 
 @app.route('/julia', methods=['GET'])
 @crossdomain(origin='*')
@@ -176,6 +192,10 @@ def call_attr_detect_vsm(url,filename,is_browser):
       result,flag = call_vsm(app.vsm,app.result_dic['sentence'][0],url)
       app.result_dic = set_result_dic(app.result_dic,result)
       app.flag = flag
+      #import pdb; pdb.set_trace()
+      result['retrieved_item'] = call_search(app.nnsearch,app.result_dic)
+      app.result_dic = set_result_dic(app.result_dic,result)
+      #import pdb;pdb.set_trace()
   except Exception as err:
     raise err	
 	
@@ -284,7 +304,8 @@ class application(web_server):
     from vsm import vsm
     #import pdb; pdb.set_trace()
     app.vsm = vsm(\
-      '/storage/attribute/PBrain_all.csv.image_sentence.txt'
+      '/works/demon_11st/nnsearch/PBrain_all_0000001_0200000.csv.0000.json'
+      #'/storage/attribute/PBrain_all.csv.image_sentence.txt'
     )
 
     agent_detector_root = '/works/demon_11st/agent/detection'
@@ -303,7 +324,10 @@ class application(web_server):
     attribute_demon_host_ip = host_ip
     app.agent_attribute = agent_attribute( \
       attribute_demon_host_ip, attribute_demon_port)
-
+    search_path = '/works/demon_11st/nnsearch'
+    sys.path.append(search_path)
+    from nnsearch import nnsearch 
+    app.nnsearch = nnsearch() 
 
     app.result_dic = init_result_dic()
 
